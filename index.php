@@ -13,6 +13,8 @@
 	*/
 	require_once 'functions/core.php';
 	require_once 'functions/uncommon.php';
+	require_once 'functions/template.php';
+	require_once 'functions/path.php';
 
 	spl_autoload_register(function($class_name)
   	{
@@ -25,7 +27,14 @@
 		$extension_prefix = '.php';
 
 		$basePath = getcwd();
-		return require_once 'services/'.$class_name.$extension_prefix;
+
+		if(file_exists('services/'.$class_name.$extension_prefix)) {
+			return require_once 'services/'.$class_name.$extension_prefix;
+		} elseif(file_exists('core/'.$class_name.$extension_prefix)) {
+			return require_once 'core/'.$class_name.$extension_prefix;
+		} else {
+			echo die("{$class_name} NOT FOUND");
+		}
 	});
 ?>
 
@@ -51,6 +60,6 @@
 		$module = substr($moduleString, 0, $modulePosition);
 		$view   = substr($moduleString, $modulePosition + 1);
 
-		return require_once("modules/{$module}/{$view}");
+		return require_once("modules/{$module}/{$view}.php");
 	}
 ?>

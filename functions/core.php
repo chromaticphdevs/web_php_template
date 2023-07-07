@@ -18,6 +18,11 @@
 		die();
 	}
 
+	function convertDotToDS($path)
+    {
+        return str_replace('.' , DS , $path);
+    }
+
 	function str_escape($value)
     {
         $search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");

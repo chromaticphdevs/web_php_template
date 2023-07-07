@@ -7,4 +7,6 @@
 			'secret' => '#'
 		]
 	];
+
+	return $plugins;
 ?>
