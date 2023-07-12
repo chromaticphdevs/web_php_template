@@ -1,4 +1,5 @@
 <?php
+
     function _path_public($args)
     {
         return PATH_PUBLIC.DS.$args;
@@ -16,8 +17,8 @@
     function _path_tmp($args)
     {
         if(is_null($args))
-            return PATH_PUBLIC.'/'.'templates/';
-        return PATH_PUBLIC.'/'.'templates/'.$args;
+            return PATH_PUBLIC.'//templates/main';
+        return PATH_PUBLIC.'//templates/'.$args;
     }
 
 
@@ -40,4 +41,27 @@
     {
         return PATH_PUBLIC.DS.'thirdparty'.DS.$args;
     }
-?>
+
+    function url_link($args)
+    {
+      return URL.'/'.$args;
+    }
+
+
+
+    function _path_upload_get($args = null)
+    {
+        $path = GET_PATH_UPLOAD;
+
+        $path = str_replace(DS, '/', $path);
+
+        return $path.'/'.$args;
+    }
+
+
+    // function _path_tmp($args)
+    // {
+    //      if(is_null($args))
+    //         return PATH_TMP;
+    //     return PATH_TMP.DS.$args;
+    // }

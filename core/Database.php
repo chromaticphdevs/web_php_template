@@ -8,6 +8,7 @@
 		private $conn;
 		//for static call
 		public static $instance = null;
+		private $result;
 
 		public function __construct() {
 
@@ -30,10 +31,26 @@
 		}
 
 		public function query($sql) {
-			return $this->conn->query($sql);
+			$this->result  = $this->conn->query($sql);
+			return $this->result;
 		}
 
-		public static function getInstance() {
-
+		public function single() {
+			return $this->result->fetch_assoc();
+			$this->_cleanQuery();
 		}
-	}
+
+		public function resultSet() {
+			$retVal = [];
+			while($row = $this->result->fetch_assoc()){
+				$retVal[] = $row;
+			}
+			$this->_cleanQuery();
+			return $retVal;
+		}
+
+		private function _cleanQuery() {
+			$this->result->free_result();
+			$this->conn->close();
+		}
+	}	

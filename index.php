@@ -1,4 +1,6 @@
 <?php
+	use Form\CommonForm;
+
 	session_start();
 	/*
 	*require config files file
@@ -7,14 +9,23 @@
 	require_once 'config/assets.php';
 	require_once 'config/database.php';
 	require_once 'config/plugins.php';
+	require_once 'config/settings.php';
 
 	/*
 	*require function file
 	*/
 	require_once 'functions/core.php';
-	require_once 'functions/uncommon.php';
-	require_once 'functions/template.php';
 	require_once 'functions/path.php';
+	require_once 'functions/string.php';
+	require_once 'functions/array.php';
+
+	require_once 'functions/template.php';
+	require_once 'functions/uncommon.php';
+	require_once 'functions/custom.php';
+
+	load(['CommonForm'],FORMS);
+
+	$_formCommon = new CommonForm();
 
 	spl_autoload_register(function($class_name)
   	{
@@ -28,11 +39,13 @@
 
 		$basePath = getcwd();
 
-		if(file_exists('services/'.$class_name.$extension_prefix)) {
-			return require_once 'services/'.$class_name.$extension_prefix;
-		} elseif(file_exists('core/'.$class_name.$extension_prefix)) {
+		if(file_exists('core/'.$class_name.$extension_prefix)) {
 			return require_once 'core/'.$class_name.$extension_prefix;
-		} else {
+		}elseif(file_exists('services/'.$class_name.$extension_prefix)){
+			return require_once 'services/'.$class_name.$extension_prefix;
+		}elseif(file_exists('helpers/'.$class_name.$extension_prefix)){
+			return require_once 'helpers/'.$class_name.$extension_prefix;
+		}else {
 			echo die("{$class_name} NOT FOUND");
 		}
 	});
@@ -41,25 +54,38 @@
 
 <?php
 	//module engine
-	$moduleRequest = $_GET['cmodule'] ?? 'modbase';
+	$moduleRequest = $_GET['cmodule'] ?? $settings['modules']['base'];
 
 	switch ($moduleRequest) {
-		case 'modbase':
-			moduleLoader('modbase_index');
-			break;
-		
+
 		default:
 			moduleLoader($moduleRequest);
 			break;
 	}
 
 	function moduleLoader($moduleString) {
+		global $settings;
+		$prefix = null;
 		$moduleString = trim($moduleString);
 		//get module
-		$modulePosition = strpos($moduleString,'_');
-		$module = substr($moduleString, 0, $modulePosition);
-		$view   = substr($moduleString, $modulePosition + 1);
 
-		return require_once("modules/{$module}/{$view}.php");
+		$modulePosition = strpos($moduleString,'_');
+
+		if($modulePosition === FALSE)  {
+			//default action
+		} else {
+			$module = substr($moduleString, 0, $modulePosition);
+			$view   = substr($moduleString, $modulePosition + 1);
+
+			if(!empty($settings['modules']['fileSettings']['alias'][$module])) {
+				$module = $settings['modules']['fileSettings']['alias'][$module];
+			}
+
+			if(!empty($settings['modules']['fileSettings']['prefix'][$module])) {
+				$prefix = $settings['modules']['fileSettings']['prefix'][$module];
+			}
+			//check module if has alias
+			return require_once("modules/{$module}/{$prefix}{$view}.php");
+		}
 	}
 ?>

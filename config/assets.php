@@ -8,7 +8,7 @@
 	//core root
     define('CORE' , APPROOT.DS.'core');
     //
-	define('FORMS' , APPROOT.DS.'form');
+	define('FORMS' , APPROOT.DS.'forms');
 	//models
 	define('MODELS' , APPROOT.DS.'models');
 	//controllers

@@ -1,5 +1,17 @@
 <?php
-    function loadTo($viewPath = '_tmp/layout')
+    function occupy($viewPath)
+    {
+        $data = $GLOBALS['data'];
+
+        extract($data);
+
+        $viewPath = convertDotToDS($viewPath);
+
+        require_once VIEWS.DS.$viewPath.'.php';
+    }
+
+
+    function loadTo($viewPath = 'tmp/layout_backoffice')
     {
         $data = $GLOBALS['data'] ?? null;
 
@@ -8,8 +20,24 @@
 
         $viewPath = convertDotToDS($viewPath);
 
-        require_once MODULES.DS.$viewPath.'.php';
+        require_once VIEWS.DS.$viewPath.'.php';
     }
+
+    /*COMBINE
+    *FILE REQUIRE
+    */
+    function combine($viewPath)
+    {
+        $viewPath = convertDotToDS($viewPath);
+
+        $file = VIEWS.DS.$viewPath.'.php';
+        if(file_exists($file)){
+            require_once $file;
+        }else{
+            die(" NO FILE FOUND ");
+        }
+    }
+
 
     function pull_view($viewPath , $data = null)
     {
@@ -26,6 +54,30 @@
 
         return require_once VIEWS.DS.$viewPath.'.php';
     }
+
+    function grab($viewPath , $data = null)
+    {
+        $viewPath = convertDotToDS($viewPath);
+
+        if(!is_null($data)) {
+            extract($data);
+        } else {
+            if(isset($_GLOBALS['data']))
+            {
+                $globalData = $GLOBALS['data'];
+                extract($globalData);
+            }
+        }
+
+        $viewPath = convertDotToDS($viewPath);
+        require_once VIEWS.DS.$viewPath.'.php';
+    }
+
+    function grab_script($path)
+    {
+
+    }
+
     /*BUILD
     *This will build a html content
     * and will be stored on render builds

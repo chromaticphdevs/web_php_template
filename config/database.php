@@ -24,7 +24,7 @@
 		'hostname' => 'localhost',
 		'db_user' => 'root',
 		'db_password' => '',
-		'db_name' => 'cindy_db'
+		'db_name' => 'cindy_realest_1'
 	];
 	
 	return $database;

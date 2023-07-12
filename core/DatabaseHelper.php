@@ -28,8 +28,16 @@
 			
 			try{
 				return $this->databaseInstance->query($sql);
-			}catch(Exception $e) {
+			}catch(\Exception $e) {
 				dump($e->getMessage());
 			}
 		}
-	}
+
+		public function getAll($tableName,$condition = '', $order = '', $limit = '',$column = '*') {
+			$this->databaseInstance->query(
+				"SELECT {$column} FROM {$tableName}
+					{$condition} {$order} {$limit}"
+			);
+			return $this->databaseInstance->resultSet();
+		}
+	}	

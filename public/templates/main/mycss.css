@@ -1,0 +1,308 @@
+/*Loader*/
+.full_out {
+    width: 100%;
+    height: 100%;
+    /*opacity: 0.5;*/
+    z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+   	/*background: black;*/
+}
+.full_in {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#cover {
+    z-index: 2222;
+	background-color: black;
+	opacity: 0.8;
+}
+#spin {
+	color: orange;
+}
+#loader {
+    z-index: 3333;
+}
+.mypointer {
+    cursor: pointer;
+}
+
+.bg-col1 {
+  background-color: #00496C;
+}
+.bg-col2 {
+  background-color: #006699;
+}
+.bg-col3 {
+  background-color: #FFB74A;
+}
+
+.text-col1 {
+  color: #00496C;
+}
+.text-col2 {
+  color: #006699;
+}
+.text-col3 {
+  color: #FFB74A;
+}
+.offsettop {
+  height: 80px;
+}
+
+.mygrad {
+  object-fit: cover;
+  object-position: center center;
+  filter: brightness(50%);
+}
+.maxw1080 {
+	width: 100%;
+	max-width: 1500px;
+}
+
+.maxw400 {
+	width: 100%;
+	max-width: 400px;
+}
+
+.imgcover {
+  width: 100%;
+  height: 100vh;
+  max-height: 750px;
+  object-fit: cover;
+}
+
+.max150W {
+  width: 130px;
+  height: 130px;
+}
+
+
+
+.filterme_bright {
+  filter:brightness(50%);
+}
+
+.errormsg {
+	position: fixed;
+  top: 70px;
+  right: 0;
+  z-index: 2001;
+}
+
+
+.banner {
+  width: 100vw;
+  max-height: 400px;
+  object-fit: cover;
+}
+.avatarimg {
+  width: 100%;
+  height: 100%;
+  max-width: 200px;
+  max-height: 200px;
+  position: relative;
+  top: -100px;
+  left: 0;
+}
+
+.navoffset {
+  margin-top: 58px; 
+}
+
+.offsetme {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  top: -100px;
+  left: 0;
+}
+.backcolor {
+  background-color: #F2F2F2;
+}
+
+.miniiconsize {
+  width: 30px !important;
+}
+
+.allpost {
+  overflow: hidden; 
+  overflow-y: scroll;
+  height: 100%;
+  max-height: 200vh;
+}
+.maxH {
+  overflow: hidden; 
+  overflow-y: scroll;
+  max-height: 1000px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.pic30 {
+  height: 30px;
+  width: 30px;
+}
+
+
+.dispoint:hover {
+  cursor: pointer;
+}
+
+.imgbox {
+  filter:brightness(50%);
+  height: 200px;
+  width: 200px;
+}
+.imgbox2 {
+  height: 200px;
+  width: 200px;
+}
+.max300W {
+  width: 200px;
+  margin: 5px;
+}
+.max300W:hover {
+  
+}
+.fonttitle {
+  font-size: 18pt;
+}
+@media screen and (max-width: 414px) {
+  .max300W {
+    width: 150px;
+    margin: 2px;
+  }
+  .imgbox2 {
+    height: 150px;
+    width: 150px;
+  }
+  .fonttitle {
+    font-size: 12pt;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .max300W {
+    width: 250px;
+    margin: 5px;
+  }
+  .imgbox2 {
+    height: 250px;
+    width: 250px;
+  }
+  .fonttitle {
+    font-size: 10pt;
+  }
+}
+
+
+.Wsmall {
+  width: 100%;
+}
+
+@media screen and (min-width: 1000px) {
+  .Wsmall {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+.cardmenu {
+  float: right;
+}
+
+.wlimit {
+  width: 100%;
+  max-width: 500px;
+}
+
+.outvertcenter { 
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.invertcenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.linknoline {
+  text-decoration:none
+}
+
+.limitheight {
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+
+.appbutt {
+  background-color: black;
+  color: white;
+}
+
+.appbutt:hover {
+  background-color: white;
+  color: #FFB74A;
+}
+
+.fb-bg-color-butt {
+  background-color: #1877F2;
+  color: white;
+  font-weight: 600;
+}
+
+.fb-bg-color-butt:hover {
+  cursor: pointer;
+  color: white;
+}
+
+.fontprice {
+  /*font-size:2vw;*/
+  font-size: clamp(12pt, 2vw, 20pt);
+}
+
+.showifmdlg {
+  display: none;
+}
+.showifsm {
+  display: block;
+}
+@media screen and (min-width: 1000px) {
+  .showifmdlg {
+    display: block;
+  }
+  .showifsm {
+    display: none;
+  }
+}
