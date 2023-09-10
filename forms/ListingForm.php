@@ -2,8 +2,9 @@
 
 	namespace Form;
 	use Core\Form;
-use LocationCityService;
-use PropertyTypeService;
+	use ListingTypeService;
+	use LocationCityService;
+	use PropertyTypeService;
 	use PropertyClassService;
 
 	load(['Form'], CORE);
@@ -11,13 +12,15 @@ use PropertyTypeService;
 	class ListingForm extends Form {
 
 		private $servicePropertyType,
-		$servicePropertyClass,$serviceLocationCity;
+		$servicePropertyClass,$serviceLocationCity,
+		$serviceListingType;
 
 		public function __construct() {
 			parent::__construct();
 			$this->servicePropertyType = new PropertyTypeService();
 			$this->servicePropertyClass = new PropertyClassService();
 			$this->serviceLocationCity = new LocationCityService();
+			$this->serviceListingType = new ListingTypeService();
 
 			$this->addListingCode();
 			$this->addTypeCode();
@@ -26,6 +29,10 @@ use PropertyTypeService;
 			$this->addListingDescription();
 			$this->addBuildingName();
 			$this->addAddress();
+			$this->addListingTag();
+			$this->addListingKey();
+			$this->addUserCode();
+			$this->moduleFolder();
 		}
 
 		public function addTypeCode() {
@@ -123,16 +130,37 @@ use PropertyTypeService;
 			]);
 		}
 
+		public function addListingTag() {
+			$listings = $this->serviceListingType->getAll();
+			$listingTagArray = arr_layout_keypair($listings,['listtypecode','listtypedesc']);
+			
+			$this->add([
+				'name' => 'listingtag',
+				'type' => 'select',
+				'class' => 'form-control',
+				'options' => [
+					'label' => 'Listing Type',
+					'option_values' => $listingTagArray
+				]
+			]);
+		}
+
+		public function addUserCode() {
+			$this->add([
+				'type' => 'hidden',
+				'name' => 'usercode'
+			]);
+		}
 		public function addPecode() {
 
 		}
 
 		public function addListingKey() {
-
-		}
-
-		public function addListingTag() {
-
+			$this->add([
+				'type' => 'hidden',
+				'value' => strtotime(nowMilitary()),
+				'name' => 'listingkeys'
+			]);
 		}
 
 		public function addDateInserted() {
@@ -141,5 +169,12 @@ use PropertyTypeService;
 
 		public function addBuilding() {
 
+		}
+
+		public function moduleFolder() {
+			$this->add([
+				'type' => 'hidden',
+				'name' => 'module_folder_name',
+			]);
 		}
 	}

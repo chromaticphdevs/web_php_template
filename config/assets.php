@@ -24,13 +24,21 @@
     define('FNCTNS' ,  APPROOT.DS.'functions');
 	define('MODULES' , APPROOT.DS.'modules');
 	define('SERVICES' , APPROOT.DS.'services');
-	define('PATH_PUBLIC' , URL.'/public');
+	define('URL_PUBLIC' , URL.'/public');
+	define('PATH_PUBLIC' , APPROOT.DS.'public');
 
 	###############################
 	define('DOMAIN_NAME', '');
 	###############################
 	define('SLUG_KEYWORD', 'condo');
 	##################################
-	define('COMPANY_NAME', 'ChromaticSoftwares');
+	define('COMPANY_NAME', 'Phlippine Real Estate Market');
 
+
+
+	###ERROR MESSAGES
+	define('ERR_INVALID_REQUEST', 'INVALID REQUEST');
+
+	###IMAGES
+	define('DEFAULT_PROPERTY_IMAGE', 'https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg');
 ?>

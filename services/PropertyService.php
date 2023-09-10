@@ -12,7 +12,7 @@
 		public function store($propData) {
 			$fillablesOnly = parent::_getFillablesOnly($propData);
 
-			$this->checkIfDuplicate();
+			// $this->checkIfDuplicate();
 			//checks
 			$fillablesOnly['prop_reference'] = date('hi');
 			return $this->databaseHelper->insert($this->_tableName,$fillablesOnly);

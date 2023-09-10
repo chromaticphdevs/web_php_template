@@ -38,6 +38,7 @@
     {
         return date('H:i:s');
     }
+
     function time_since($date) 
     {
          $timestamp = strtotime($date);
@@ -47,20 +48,17 @@
          $currentTime = strtotime(now());
          
          if($currentTime >= $timestamp) {
-
             $diff     = time()- $timestamp;
-
-            for($i = 0; $diff >= $length[$i] && $i < count($length)-1; $i++) 
-            {
+            for($i = 0; $diff >= $length[$i] && $i < count($length)-1; $i++) {
                 $diff = $diff / $length[$i];
             }
-
             $diff = round($diff);
             return $diff . " " . $strTime[$i] . "(s) ago ";
+         } else {
+            return "Just now";
          }
-
     }
-  
+    
     function date_long($date  , $format = null , $new = false)
     {
         if($date == "" || $date == '0000-00-00')

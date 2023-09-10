@@ -14,21 +14,25 @@
 			'alias' => [],
 			'prefix' => []
 		],
-		'base' => 'home_index'
+
+		'base_module' => 'landing',
+		'base_module_view' => 'index'
 	];
 
 	/**
 	 *set your module alias here*/
 	$settings['modules']['fileSettings']['alias'] = [
-		'x' => 'xsample',
 		'prop' => 'property',
+		'inq'  => 'inquiries'
 	];
 
 	/**
 	 *set your module alias here*/
 	$settings['modules']['fileSettings']['prefix'] = [
-		'property' => 'prop.',
-		'ads' => 'ads.'
+		'property' => 'prop_',
+		'ads' => 'ad_',
+		'landing' => 'landing_',
+		'inq' => 'inq_'
 	];
 
 

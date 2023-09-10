@@ -466,8 +466,8 @@
 			$items = $this->_items;
 			foreach ($items as $key => $item) {
 				$name = trim($item['name']);//column_name equivalent
-				if(isset($object->$name))
-					$items[$key]['value'] = $object->$name;
+				if(isset($object[$name]))
+					$items[$key]['value'] = $object[$name];
 			}
 			$this->_items = $items;
 			return $items;

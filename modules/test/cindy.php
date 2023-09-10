@@ -4,7 +4,6 @@
 	global $_formCommon;
 
 	$listingForm = new ListingForm();
-
 	$_formCommon->setOptionValues('sort',[
 		'proptypecode' => 'Property Type',
 		'propclasscode' => 'Property Class',

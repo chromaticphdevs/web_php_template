@@ -1,17 +1,5 @@
 <?php
-    function occupy($viewPath)
-    {
-        $data = $GLOBALS['data'];
-
-        extract($data);
-
-        $viewPath = convertDotToDS($viewPath);
-
-        require_once VIEWS.DS.$viewPath.'.php';
-    }
-
-
-    function loadTo($viewPath = 'tmp/layout_backoffice')
+    function loadTo($viewPath = '_tmp/layout_backend')
     {
         $data = $GLOBALS['data'] ?? null;
 
@@ -20,24 +8,8 @@
 
         $viewPath = convertDotToDS($viewPath);
 
-        require_once VIEWS.DS.$viewPath.'.php';
+        require_once MODULES.DS.$viewPath.'.php';
     }
-
-    /*COMBINE
-    *FILE REQUIRE
-    */
-    function combine($viewPath)
-    {
-        $viewPath = convertDotToDS($viewPath);
-
-        $file = VIEWS.DS.$viewPath.'.php';
-        if(file_exists($file)){
-            require_once $file;
-        }else{
-            die(" NO FILE FOUND ");
-        }
-    }
-
 
     function pull_view($viewPath , $data = null)
     {
@@ -70,7 +42,7 @@
         }
 
         $viewPath = convertDotToDS($viewPath);
-        require_once VIEWS.DS.$viewPath.'.php';
+        require_once MODULES.DS.$viewPath.'.php';
     }
 
     function grab_script($path)

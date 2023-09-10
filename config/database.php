@@ -3,20 +3,20 @@
 	 * hide to root folder*/
 	$database = [];
 
+	$database['local'] = [
+		'vendor' => 'mysql',
+		'hostname' => 'localhost',
+		'db_user' => 'root',
+		'db_password' => '',
+		'db_name' => 'cindy_real_est'
+	];
+
 	$database['uat'] = [
 		'vendor' => 'mysql',
 		'hostname' => 'localhost',
-		'db_user' => 'root',
-		'db_password' => '',
-		'db_name' => 'cindy_db'
-	];
-
-	$database['dev'] = [
-		'vendor' => 'mysql',
-		'hostname' => 'localhost',
-		'db_user' => 'root',
-		'db_password' => '',
-		'db_name' => 'cindy_db'
+		'db_user' => 'marcha140_dev',
+		'db_password' => 'v937xQqPE_',
+		'db_name' => 'marcha140_dev'
 	];
 
 	$database['prod'] = [
@@ -24,7 +24,7 @@
 		'hostname' => 'localhost',
 		'db_user' => 'root',
 		'db_password' => '',
-		'db_name' => 'cindy_realest_1'
+		'db_name' => 'cindy_real_est'
 	];
 	
 	return $database;

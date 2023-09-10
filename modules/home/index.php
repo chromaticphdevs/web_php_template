@@ -7,8 +7,6 @@
 <body class="backcolor">
 	<?php echo loader_tag();?>
 	<!-- Top Nav -->
-
-
 	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white shadow">
 		<div class="container-fluid">
 			<a class="navbar-brand m-0 w-50" href="index.php">

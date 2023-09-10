@@ -6,22 +6,26 @@
 	
 	class _Service{
 
-		protected $dbHelper;
-		protected $databaseInstance;
-		protected $databaseHelper;
+		public $databaseInstance;
+		public $databaseHelper;
 
 		/*
 		*must have in every extended service
 		*/
-		public $_tableName;
+		public $_tableName, $_primaryKey;
 		public $_columnFillables = [];
+		
+
+		protected $_retVal = [];
+		private $_errors = [];
+		private $_messages = [];
 
 		public function __construct() {
-			$this->databaseInstance = new Database();
+			$this->databaseInstance = Database::getinstance();
 			$this->databaseHelper = new DatabaseHelper($this->databaseInstance);
 		}
 
-		protected function _getFillablesOnly($datas) {
+		final public function _getFillablesOnly($datas) {
 			$return = [];
 
 			foreach($datas as $key => $row) {
@@ -32,6 +36,7 @@
 			}
 			return $return;
 		}
+		
 
 		public function getAll($params = []) {
 			$condition = !empty($params['where']) ? " WHERE ".$this->conditionConvert($params['where']) : '';
@@ -41,35 +46,53 @@
 			return $this->databaseHelper->getAll($this->_tableName, $condition, $order, $limit, $column);
 		}
 
-		public function get($id) {
-			$query = $this->databaseInstance->query("SELECT * FROM {$this->_tableName} WHERE id = '{$id}'");
-			$retVal = [];
-
-			while($row = $query->fetch_assoc()) {
-				$retVal[] = $row;
-			}
-
-			return $retVal[0] ?? false;
+		public function single($params = []) {
+			return $this->getAll($params)[0] ?? false;
 		}
 
-		public function single($params = []) {
-			$where = $params['where'];
+		public function store($data) {
+			$isOkay =  $this->databaseHelper->insert(...[
+				$this->_tableName,
+				$data
+			]);
 
-			$query = $this->databaseInstance->query(
-				"SELECT * FROM {$this->_tableName}
-					WHERE username = '{$where['username']}' "
+			if(!$isOkay) {
+				return false;
+			}
+			
+			return $this->databaseHelper->lastInsertedId;
+		}
+
+		public function update($data, $id) {
+			return $this->databaseHelper->update(...[
+				$this->_tableName,
+				$data,
+				$this->conditionConvert($id)
+			]);
+		}
+
+		public function delete($id) {
+			return $this->databaseHelper->delete(...[
+				$this->_tableName,
+				$this->conditionConvert($id)
+			]);
+		}
+
+		public function count($params = []) {
+			$where = null;
+			if(!empty($params['where'])){
+				$where = " WHERE ". $this->conditionConvert($params['where']);
+			}
+			$this->databaseInstance->query(
+				"SELECT count(*) as totalCount
+					FROM {$this->_tableName}
+					{$where}"
 			);
 
-			$retVal = [];
-
-			while($row = $query->fetch_assoc()) {
-				$retVal[] = $row;
-			}
-
-			return $retVal[0] ?? false;
+			return $this->databaseInstance->single()['totalCount'] ?? 0;
 		}
 
-		public function conditionConvert($params , $defaultCondition = '=')
+		final public function conditionConvert($params , $defaultCondition = '=')
 		{
 			$WHERE = '';
 			$counter = 0;
@@ -90,7 +113,7 @@
 				if( $counter > 0)
 					$WHERE .= " {$condition_operation_concatinator} "; //add space
 				
-				if($key == 'GROUP_CONDITION') {
+				if($key == 'GROUP_CONDITION' && !empty($param_value)) {
 					$WHERE .= '('.$this->conditionConvert($param_value) . ')';
 					$counter++;
 					continue;
@@ -198,5 +221,30 @@
 				$counter++;
 			}
 			return $WHERE;
+		}
+
+		public function addError($error) {
+			$this->_errors[] = $error;
+			return $this;
+		}
+
+		public function getErrors() {
+			return $this->_errors;
+		}
+		public function addMessage($message) {
+			$this->_messages[] = $message;
+			return $this;
+		}
+
+		public function getMessages() {
+			return $this->_messages;
+		}
+
+		final public function addRetVal($name, $value) {
+			$this->_retVal[$name] = $value;
+		} 
+
+		final public function getRetVal($name) {
+			return $this->_retVal[$name];
 		}
 	}

@@ -1,11 +1,9 @@
 <?php 
-
 	namespace Core;
-
 
 	class Database {
 		
-		private $conn;
+		public $conn;
 		//for static call
 		public static $instance = null;
 		private $result;
@@ -25,9 +23,14 @@
 			// check connection
 			if($this->conn->connect_error) {
 			  die("Connection Failed : " . $this->conn->connect_error);
-			} else {
-			  // echo "Successfully connected";
 			}
+		}
+
+		public static function getInstance() {
+			if(is_null(self::$instance)) {
+				self::$instance = new Database();
+			}
+			return self::$instance;
 		}
 
 		public function query($sql) {
@@ -37,7 +40,7 @@
 
 		public function single() {
 			return $this->result->fetch_assoc();
-			$this->_cleanQuery();
+			// $this->_cleanQuery();
 		}
 
 		public function resultSet() {
@@ -45,7 +48,7 @@
 			while($row = $this->result->fetch_assoc()){
 				$retVal[] = $row;
 			}
-			$this->_cleanQuery();
+			// $this->_cleanQuery();
 			return $retVal;
 		}
 

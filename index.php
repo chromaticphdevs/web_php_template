@@ -17,10 +17,14 @@
 	require_once 'functions/core.php';
 	require_once 'functions/path.php';
 	require_once 'functions/string.php';
+	require_once 'functions/date.php';
 	require_once 'functions/array.php';
 
 	require_once 'functions/template.php';
 	require_once 'functions/uncommon.php';
+	require_once 'functions/request.php';
+	require_once 'functions/app_widget.php';
+	require_once 'functions/token.php';
 	require_once 'functions/custom.php';
 
 	load(['CommonForm'],FORMS);
@@ -37,8 +41,6 @@
 		$class_name = ucfirst(str_replace($invalidChars, '', $class_name));
 		$extension_prefix = '.php';
 
-		$basePath = getcwd();
-
 		if(file_exists('core/'.$class_name.$extension_prefix)) {
 			return require_once 'core/'.$class_name.$extension_prefix;
 		}elseif(file_exists('services/'.$class_name.$extension_prefix)){
@@ -53,8 +55,12 @@
 
 
 <?php
-	//module engine
-	$moduleRequest = $_GET['cmodule'] ?? $settings['modules']['base'];
+
+	$moduleRequest = $_GET['cmodule'] ?? '';
+
+	if(empty($moduleRequest)) {
+		$moduleRequest = $settings['modules']['base_module'] . "_" . $settings['modules']['base_module_view'];
+	}
 
 	switch ($moduleRequest) {
 

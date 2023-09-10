@@ -16,8 +16,46 @@
 		return header("Location:{$url}");
 	}
 	
-	function _route() {
+	function _route($pageName, $parameterId = '', $parameter = []) {
 
+        $parameterString = '';
+
+        if(!empty($parameterId))
+        {
+            if(is_array($parameterId))
+            {
+                $parameterString .= "?";
+
+                $counter = 0;
+                foreach($parameterId as $key => $row) 
+                {
+                    if( $counter > 0)
+                        $parameterString .= "&";
+
+                    $parameterString .= "{$key}={$row}";
+                    $counter++;
+                }
+            }else{
+                //parameter is id
+                $parameterString = '/'.$parameterId.'?';
+            }
+        }
+
+        if(is_array($parameter) && !empty($parameter))
+        {
+            if( empty($parameterString) )
+                $parameterString .= '?';
+            $counter = 0;
+            foreach($parameter as $key => $row) 
+            {
+                if( $counter > 0)
+                    $parameterString .='&';
+                $parameterString .= "{$key}={$row}";
+                $counter++;
+            }
+        }
+
+        return $pageName.$parameterString;
 	}
 
 	function _config($fileName) {
@@ -44,4 +82,20 @@
         return str_replace('.' , DS , $path);
     }
 
+	function pre($data)
+    {
+        echo '<pre>';
+            var_dump($data);
+        echo '</pre>';
+    }
+	
+    function dd($data)
+    {
+        $data = json_encode($data);
+        die($data);
+    }
+
+    function _error($message = ERR_INVALID_REQUEST) {
+        echo die($message);
+    }
 ?>

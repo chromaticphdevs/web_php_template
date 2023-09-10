@@ -1,4 +1,13 @@
 <?php
+    function moduleActionRedirectCheck($redirectVar) {
+        if(!empty($redirectVar)) {
+            return redirect(unseal($redirectVar));
+        } else {
+            //return to last page
+            return request()->return();
+        }
+    }
+
     function isSubmitted()
     {
         $request = $_SERVER['REQUEST_METHOD'];
@@ -194,6 +203,21 @@
           require_once $path.DS.$row.'.php';
         }
       }
+    }
+
+
+    function delete_directory($directory) {
+        $it = new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it,
+                    RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($directory);
     }
 
     function model($model)

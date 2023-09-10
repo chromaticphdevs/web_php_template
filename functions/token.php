@@ -48,11 +48,9 @@
 
 	function token_make()
 	{
-
-		if(!Session::check('token')) {
-			$token = seal(get_token_random_char(12));
-			Session::set('token' , $token);
-		}
+		$token = seal(get_token_random_char(12));
+		Session::set('token' , $token);
+		
 		return Session::get('token');
 	}
 
