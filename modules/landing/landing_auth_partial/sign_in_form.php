@@ -13,17 +13,14 @@
         </div>
         <input type="submit" class="btn btn-info bg-col1 border-0 text-white w-100"
             value="Log In" name="btn_login">
+        <?php echo wDivider(10)?>
+        <button type="button" onclick="goBack();" 
+            class="btn btn-info bg-col1 border-0 text-white w-100" >Go Back</button>
         <?php echo wDivider()?>
         <div>
             <p class="mb-1 pb-0">Not yet registered?</p>
-            <a href="?form=sign_up" class="" >Create an Account Here.</a>
+            <?php echo wLinkDefault(_route('landing_register',''), 'Create an Account Here.')?>
         </div>
-        <?php echo wDivider()?>
-        <button type="button" onclick="goBack();" 
-            class="btn btn-info bg-col1 border-0 text-white w-100" >Go Back</button>
-        <br>
-        <div class="d-flex justify-content-center">
-            <button onclick="resendverification();" class="btn btn-link text-secondary" style="display: <?php echo $display;?>;">Resend Email verificaion code</button>
-        </div>
+        
     </div>
 </form>

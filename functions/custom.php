@@ -1,6 +1,50 @@
 <?php 
 use Core\Database;
 
+function _forGuestPageOnly($href = '') {
+    if(!empty(whoIs())) {
+        if(empty($href)) {
+            $href = _route('user_dashboard');
+        }
+        Flash::set("Invalid Page", 'warning');
+        return redirect($href);
+    }
+}
+
+function _forAuthPageOnly($href = '', $userType = []) {
+    if(empty(whoIs())) {
+        if(empty($href)) {
+            $href = _route('landing_login');
+        }
+        Flash::set("Invalid Page", 'warning');
+        return redirect($href);
+    }
+}
+
+
+function html_ads_star_link($star, $status, $href = 'javascript:void(0)') {
+    $btnType = '';
+    $txtColor = '';
+
+    if($star) {
+        if(isEqual($status, 'off')) {
+            $btnType = 'btn-danger';
+        } else {
+            $btnType = 'btn-success';
+        }
+    } else {
+        $btnType = 'btn-outline-secondary';
+    }
+    echo wLinkDefault($href, '',[
+        'type' => 'button',
+        'class' => "btn btn-sm {$btnType} rounded-circle mb-3",
+        'data-bs-toggle' => 'tooltup',
+        'data-bs-placement' => 'top',
+        'title' => '',
+        'data-bs-original-title' => 'Assign stars to this ads',
+        'icon' => 'fa fa-star',
+    ]);
+}
 /**
  * clearlink route should be the route function
  */
@@ -130,7 +174,7 @@ function sideadsfooter_tag(){
             }
             
             $timeSince = $row['dateinserted'];
-            $path = _path_tmp("items/0_side_ads/{$row['filename']}.jpg");
+            $path = _path_public("/uploads/images/SIDE_ADS/{$row['filename']}.jpg");
             
             $data1 .= "<li data-bs-target='#car3' data-bs-slide-to='$' class='bg-secondary $active'></li>";
             

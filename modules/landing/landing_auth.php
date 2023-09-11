@@ -1,7 +1,8 @@
 <?php build('content') ?>
 <?php
     use Form\AccountForm;
-
+    _forGuestPageOnly();
+    
     load(['AccountForm'],FORMS);
     $formAccount = new AccountForm();
     $serviceAccount = new AccountService();
@@ -10,15 +11,20 @@
     $formOnDisplay = request()->input('form') ?? 'sign_in';
 
     //php acttion section
-
     if(isSubmitted()) {
         $post = request()->posts();
-        $user = $serviceAccount->authenticate($post['email'], $post['password']);
+        if(!empty($post['btn_login'])) {
+            $user = $serviceAccount->authenticate($post['email'], $post['password']);
 
-        if(!$user) {
-            Flash::set(arr_to_str($serviceAccount->getErrors()),'danger');
-        } else {
-            return redirect('user_dashboard');
+            if(!$user) {
+                Flash::set(arr_to_str($serviceAccount->getErrors()),'danger');
+            } else {
+                return redirect('user_dashboard');
+            }
+        } 
+
+        if(!empty($post['btn_register'])) {
+            dump($post);
         }
     }
 ?>

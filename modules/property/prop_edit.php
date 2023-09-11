@@ -5,6 +5,7 @@ use Form\ListingForm;
 load(['ListingForm'], FORMS);
 global $_formCommon;
 
+_forAuthPageOnly();
 $req = request()->inputs();
 
 $listingService = new ListingService();
@@ -46,14 +47,17 @@ $listingForm = new ListingForm();
 <div class="card">
 	<div class="card-header">
 		<h4 class="card-title"><i class="me-3 fa fa-clipboard-list"></i>Edit Listing</h4>
-		<?php 
-			echo wLinkDefault(_route('prop_show', [
-				'recno' => seal($propId)
-			]), 'Cancel Edit', ['class' => 'btn btn-primary btn-sm'])
-		?>
 	</div>
 	<div class="card-body">
 	    <?php Flash::show()?>
+
+		<?php 
+			echo wLinkDefault(_route('prop_show', [
+				'recno' => seal($propId)
+			]), 'Cancel Edit', ['class' => 'btn btn-primary btn-sm']);
+
+			echo wDivider();
+		?>
 		<?php echo $listingForm->start()?>
 		<?php echo $listingForm->get('usercode')?>
 		<?php echo $listingForm->get('listingkeys')?>

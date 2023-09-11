@@ -4,7 +4,7 @@
 
     $req = request()->inputs();
     $listingForm = new ListingForm();
-
+    _forAuthPageOnly();
     if(!isset($req['recno'])) {
         _error();
     }

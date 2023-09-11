@@ -1,4 +1,5 @@
 <?php
+   _forAuthPageOnly();
    $req = request()->inputs();
 
    $addId = unseal($req['recno']);

@@ -1,5 +1,6 @@
 <?php build('content') ?>
 <?php 
+	_forAuthPageOnly();
 	use Form\ListingForm;
 	load(['ListingForm'], FORMS);
 	load(['Form'], HELPERS);
@@ -13,7 +14,8 @@
 		$filter = array_filter([
 			'listing.propclasscode' => $req['propclasscode'],
 			'listing.loccitycode' => $req['loccitycode'],
-			'listing.proptypecode' => $req['proptypecode']
+			'listing.proptypecode' => $req['proptypecode'],
+			'listing.usercode' => whoIs('usercode')
 		]);
 
 		$listings = $listingService->getAll([
@@ -22,6 +24,9 @@
 		]);
 	} else {
 		$listings = $listingService->getAll([
+			'where' => [
+				'listing.usercode' => whoIs('usercode')
+			],
 			'order' => 'listingcode asc, '.$listingService->_primaryKey.' desc',
 		]);
 	}

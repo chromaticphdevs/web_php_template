@@ -7,6 +7,8 @@ load(['ListingForm','AdsForm'], FORMS);
 build('content') ?>
 
 <?php
+_forAuthPageOnly();
+
 $listingForm = new ListingForm();
 $formAd = new AdsForm();
 
@@ -22,7 +24,8 @@ if(isSubmitted()) {
 	if($result) {
 		$listing = $listingService->single([
 			'where' => [
-				'listing.listingkeys' => $post['listingcode']
+				'listing.listingkeys' => $post['listingcode'],
+				'listing.usercode' => whoIs('usercode')
 			]
 		]);
 
@@ -42,13 +45,18 @@ if(!empty($req['filter'])) {
 		'listing.proptypecode' => $req['proptypecode'],
 		'listing.propclasscode' => $req['propclasscode'],
 		'listing.loccitycode' => $req['loccitycode'],
+		'listing.usercode' => whoIs('usercode')
 	]);
 
 	$adLists = $adService->getAll([
 		'where' => $validFilters
 	]);
 } else {
-  $adLists = $adService->getAll();
+  $adLists = $adService->getAll([
+	'where' => [
+		'listing.usercode' => whoIs('usercode')
+	]
+  ]);
 }
 ?>
 <!-- Create Listing -->
@@ -189,10 +197,11 @@ if(!empty($req['filter'])) {
 					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
 					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
 						<div class='p-4' style='border:""'>
-						<button onclick='' type='button' class='btn btn-sm btn-$active2 rounded-circle mb-3' 
-						data-bs-toggle='tooltip' data-bs-placement='top' title='' 
-						data-bs-original-title='Assign stars to this ads'><i class='fa fa-star'></i></button>
-
+						<?php html_ads_star_link($row['star_id'], $row['status'], _route('ads_actions', [
+							'action' => 'toggle_star',
+							'recno' => seal($row['recno']),
+							'returnTo' => seal(_route('ads_create'))
+						]));?>
 						<p class='mb-2 text-truncate'><?php echo $row['listingcode']?><br>
 						<small class='text-truncate'><?php echo $row['listtypecode']?></small>
 						</p>

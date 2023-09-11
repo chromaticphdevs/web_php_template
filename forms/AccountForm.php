@@ -1,6 +1,8 @@
 <?php 
     namespace Form;
-    use Core\Form;
+
+use AccountService;
+use Core\Form;
     load(['Form'],CORE);
 
     class AccountForm extends Form {
@@ -12,6 +14,11 @@
             $this->addPassword();
             $this->addFirstName();
             $this->addLastName();
+            $this->addMobileNumber();
+            $this->addViberNumber();
+            $this->addMemberLicense();
+            $this->addMemberInfo();
+            $this->addMemberAbout();
         }
 
         public function addCode() {
@@ -75,4 +82,74 @@
                 'required' => true
             ]);
         }
+
+        public function addMobileNumber() {
+            $this->add([
+                'name' => 'membercellno',
+                'type' => 'text',
+                'class' => 'form-control',
+                'options' => [
+                    'label' => 'Mobile Number'
+                ],
+                'required' => true
+            ]);
+        }
+
+        public function addViberNumber() {
+            $this->add([
+                'name' => 'memberviberno',
+                'type' => 'text',
+                'class' => 'form-control',
+                'options' => [
+                    'label' => 'Viber Number'
+                ]
+            ]);
+        }
+
+        public function addMemberLicense() {
+            $this->add([
+                'name' => 'memberlicense',
+                'type' => 'text',
+                'class' => 'form-control',
+                'options' => [
+                    'label' => 'Your Real Estate Broker License Number'
+                ],
+                'attributes' => [
+                    'id' => 'memberlicense'
+                ]
+            ]);
+        }
+
+        public function addMemberInfo() {
+            $this->add([
+                'name' => 'memberinfo',
+                'type' => 'select',
+                'class' => 'form-control',
+                'options' => [
+                    'label' => "Member's Info",
+                    'option_values' => AccountService::memberTypeInfos()
+                ],
+                'required' => true,
+                'attributes' => [
+                    'id' => 'memberinfo'
+                ]
+            ]);
+        }
+
+
+        public function addMemberAbout() {
+            $this->add([
+                'name' => 'memberabout',
+                'type' => 'textarea',
+                'class' => 'form-control',
+                'options' => [
+                    'label' => 'About me'
+                ],
+                'attributes' => [
+                    'style' => 'min-height:150px'
+                ]
+            ]);
+        }
     }
+
+    

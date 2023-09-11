@@ -1,8 +1,10 @@
 <?php build('content') ?>
 <?php
+	_forAuthPageOnly();
     $serviceListing = new ListingService();
     $serviceAds = new AdService();
     $serviceClient = new ClientService();
+	$serviceNews = new NewsService();
 
     $whoIsUserCode = whoIs('usercode');
     
@@ -39,6 +41,10 @@
             'showhide' => 'hide'
         ]
     ]);
+
+	$news = $serviceNews->getAll();
+
+	$ID_picture = DEFAULT_PROFILE_IMAGE;
 ?>
 <body class="backcolor">
 	<!-- Main -->
@@ -50,7 +56,7 @@
 					<div onclick="loadMyURL('profile.php')" class="bg-col1 text-white rounded h-100 mypointer">
 						<div class="row g-0">
 							<div class="col-4 text-center p-4">
-							<img src="<?php echo $ID_picture;?>" class="img-fluid rounded-circle" alt="id"><br>
+							<img src="<?php echo $ID_picture;?>" class="img-fluid rounded-circle" alt="id" style="background-color: #ffff;"><br>
 							<small class=""><b><i class="fa fa-gem"></i><?php echo whoIs('membertype');?></b></small>
 							</div>
 							<div class="col-8">
@@ -104,9 +110,17 @@
 	<div class="card mb-4">
 		<div class="card-body p-4">
 			<h4>Announcements</h4>
-			<div id="load_here">
-				
-			</div>
+			<?php if(!empty($news)) :?>
+				<?php foreach($news as $key => $row) :?>
+					<div class="box">
+						<h4><?php echo $row['title']?></h4>
+						<div><?php echo $row['description']?></div>
+						<div>Administrator posted <?php echo time_since($row['dateinserted'])?></div>
+					</div>
+				<?php endforeach?>
+			<?php else :?>
+				<p class="text-center"> nothing to show.. </p>
+			<?php endif?>
 		</div>
 	</div>
 

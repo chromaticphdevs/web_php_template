@@ -41,4 +41,5 @@
 
 	###IMAGES
 	define('DEFAULT_PROPERTY_IMAGE', 'https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg');
+	define('DEFAULT_PROFILE_IMAGE', 'http://cdn.onlinewebfonts.com/svg/img_206976.png');
 ?>

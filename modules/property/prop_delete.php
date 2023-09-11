@@ -4,6 +4,7 @@
     use Form\ListingForm;
     load(['ListingForm','AdsForm'], FORMS);
 
+    _forAuthPageOnly();
     $req = request()->inputs();
     $recno = unseal($req['recno']);
     $listingService = new ListingService();

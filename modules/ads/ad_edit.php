@@ -7,6 +7,7 @@ load(['ListingForm','AdsForm'], FORMS);
 build('content') ?>
 
 <?php
+_forAuthPageOnly();
 $listingForm = new ListingForm();
 $listingService = new ListingService();
 $adService = new AdService();

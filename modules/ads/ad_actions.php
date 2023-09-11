@@ -1,4 +1,5 @@
 <?php
+    _forAuthPageOnly();
    /**
     * required for action 
     * actionToken, recno = id
@@ -32,6 +33,65 @@
             ], [
                 'recno' => $adInfo['recno']
             ]);
+            return moduleActionRedirectCheck($req['returnTo'] ?? '');
+        break;
+
+        case 'toggle_star':
+            //check for user
+            $accountService = new AccountService();
+
+            $ads = $adService->single([
+                'where' => [
+                    'ads.recno' => $recno
+                ]
+            ]);
+
+            $user = $accountService->single([
+                'where' => [
+                    'recno' => whoIs('recno')
+                ]
+            ]);
+
+            /**
+             * REMOVE STAR FROM AD
+             */
+            if($ads['star_id']) {
+                /**
+                 * check if star has an add
+                 * only then you update
+                 */
+                if($ads['star_id']) {
+                    $accountService->update([
+                        'stars' => $user['stars'] += 1
+                    ], [
+                        'recno' => $user['recno']
+                    ]);
+    
+                    $adService->update([
+                        'star_id' => 0
+                    ], [
+                        'recno' => $recno
+                    ]);
+                }
+            } else {
+                /**
+                 * check if no star
+                 */
+                if(!$ads['star_id']) {
+                    $accountService->update([
+                        'stars' => $user['stars'] -= 1
+                    ], [
+                        'recno' => $user['recno']
+                    ]);
+    
+                    $adService->update([
+                        'star_id' => 1
+                    ], [
+                        'recno' => $recno
+                    ]);
+                }
+            }
+
             return moduleActionRedirectCheck($req['returnTo'] ?? '');
         break;
     }

@@ -35,7 +35,6 @@
 
 		public function store($data) {
 			$fillablesOnly = parent::_getFillablesOnly($data);
-
 			return $this->databaseHelper->insert($this->_tableName,$fillablesOnly);
 		}
 	}
