@@ -48,6 +48,16 @@ $listing = $listingService->single([
 	]
 ]);
 
+$ads = $adService->getAll([
+	'where' => [
+		'ads.recno' => [
+			'condition' => 'not equal',
+			'value' => $adId
+		],
+		'listing.usercode' => whoIs('usercode')
+	]
+]);
+
 $formAd->add([
     'type' => 'hidden',
     'value' => $adId,
@@ -144,14 +154,7 @@ $formAd->setValueObject($adInfo);
 <div class="card">
 	<div class="card-body">
 		<div class='d-flex justify-content-evenly flex-wrap'>
-			<?php foreach($adService->getAll([
-				'where' => [
-					'ads.recno' => [
-						'condition' => 'not equal',
-						'value' => $adId
-					]
-				]
-			]) as $key => $row):?>
+			<?php foreach($ads as $key => $row):?>
 				<?php
 					$images = $listingService->getImages($row['module_folder_name']);
 					$imageA = "public/uploads/images/{$row['module_folder_name']}/{$images[0]}";	
@@ -161,9 +164,11 @@ $formAd->setValueObject($adInfo);
 					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
 					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
 						<div class='p-4' style='border:""'>
-						<button onclick='' type='button' class='btn btn-sm btn-$active2 rounded-circle mb-3' 
-						data-bs-toggle='tooltip' data-bs-placement='top' title='' 
-						data-bs-original-title='Assign stars to this ads'><i class='fa fa-star'></i></button>
+						<?php html_ads_star_link($row['star_id'], $row['status'], _route('ads_actions', [
+							'action' => 'toggle_star',
+							'recno' => seal($row['recno']),
+							'returnTo' => seal(_route('ads_create'))
+						]));?>
 
 						<p class='mb-2 text-truncate'><?php echo $row['listingcode']?><br>
 						<small class='text-truncate'><?php echo $row['listtypecode']?></small>

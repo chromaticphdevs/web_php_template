@@ -30,6 +30,7 @@
         ]
     ]);
     
+    
     $listingForm->setValueObject($listing);
     $imageFolder = $listing['module_folder_name'];
     $listingImages = $listingService->getImages($imageFolder);
@@ -137,16 +138,20 @@
                         <img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
                         <div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
                             <div class='p-4' style='border:""'>
-                                <button onclick='' type='button' class='btn btn-sm btn-active rounded-circle mb-3' 
-                                data-bs-toggle='tooltip' data-bs-placement='top' title='asa ang star' 
-                                data-bs-original-title='Assign stars to this ads'><i class='fa fa-star'></i></button>
+                                    <?php html_ads_star_link($row['star_id'], $row['status'], _route('ads_actions', [
+                                        'action' => 'toggle_star',
+                                        'recno' => seal($row['recno']),
+                                        'returnTo' => seal(_route('prop_show', [
+                                            'recno' => seal($recno)
+                                        ]))
+                                    ]));?>
                                     <p class='mb-2 text-truncate'><?php echo $row['listingcode']?><br>
                                     <small class='text-truncate'><?php echo $row['listtypecode']?></small>
                                     </p>
                                     <div class='mt-0'>
                                         <?php 
                                             echo wLinkDefault(_route('prop_detail', [
-                                                'recno' => seal($row['recno'])
+                                                'adId' => seal($row['recno'])
                                             ]), '', ['icon' => 'fa fa-eye', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
                                             echo wLinkDefault(_route('ads_edit', [

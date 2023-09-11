@@ -39,6 +39,7 @@
         case 'toggle_star':
             //check for user
             $accountService = new AccountService();
+            $accountService = new AccountService();
 
             $ads = $adService->single([
                 'where' => [
@@ -72,26 +73,36 @@
                     ], [
                         'recno' => $recno
                     ]);
+
+                    Flash::set("Stars removed from an ad");
                 }
             } else {
                 /**
                  * check if no star
                  */
                 if(!$ads['star_id']) {
-                    $accountService->update([
-                        'stars' => $user['stars'] -= 1
-                    ], [
-                        'recno' => $user['recno']
-                    ]);
-    
-                    $adService->update([
-                        'star_id' => 1
-                    ], [
-                        'recno' => $recno
-                    ]);
+                    //check if user has star
+                    if($user['stars'] >= 1) {
+                        $accountService->update([
+                            'stars' => $user['stars'] -= 1
+                        ], [
+                            'recno' => $user['recno']
+                        ]);
+        
+                        $adService->update([
+                            'star_id' => 1
+                        ], [
+                            'recno' => $recno
+                        ]);
+
+                        Flash::set("Stars successfully placed to an ad");
+                    } else {
+                        Flash::set("User has no available stars", 'warning');
+                    }
                 }
             }
 
+            $accountService->startAuth(whoIs('recno'));
             return moduleActionRedirectCheck($req['returnTo'] ?? '');
         break;
     }
