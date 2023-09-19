@@ -40,6 +40,25 @@
 	<script src="<?php echo _path_tmp('main/js/popper.min.js')?>"></script>
 	<script src="<?php echo _path_tmp('main/js/all.min.js')?>" defer></script>
 	<script src="<?php echo _path_tmp('main/js/bootstrap.bundle.min.js')?>"></script>
+	<script src="<?php echo _path_public('js/prop.js')?>"></script>
+
+	<script>
+		$(document).ready(function(){
+			if($('.form-verify-action')){
+				$('.form-verify-action').click(function(evt) {
+
+					let message = $(this).attr('data-message');
+
+					if(message == null) {
+						message = 'Are you sure you want to continue this proccess , irreversible process ';
+					}
+					if(!confirm(message)){
+						evt.preventDefault();
+					}
+				});
+			}
+		});
+	</script>
 	<?php produce('scripts')?>
 </body>
 </html>

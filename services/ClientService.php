@@ -20,6 +20,29 @@ use function PHPSTORM_META\map;
             'clientstatus'
         ];
 
+        public function getClients($params = []) {
+            $where = null;
+            $order = null;
+
+            if(!empty($params['where'])) {
+                $where = " WHERE ". parent::conditionConvert($params['where']);
+            }
+
+            if(!empty($params['order'])) {
+                $order = " ORDER BY {$params['order']}";
+            } else {
+                $order = " ORDER BY client.recno desc";
+            }
+
+            $this->databaseInstance->query(
+                "SELECT * FROM {$this->_tableName} as client
+                    {$where}
+                    GROUP BY clientemail
+                    {$order}"
+            );
+
+            return $this->databaseInstance->resultSet();
+        }
         public function getAll($params = [])
         {
             $where = null;
@@ -63,6 +86,7 @@ use function PHPSTORM_META\map;
             $_columnFillables['clientcode'] = $data['clientlname'].'_'.time();
             $_columnFillables['dateinserted'] = now();
             $_columnFillables['clientstatus'] = 'Lead';
+            
             return parent::store($_columnFillables);
             //create client code
         }

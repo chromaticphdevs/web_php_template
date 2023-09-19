@@ -45,6 +45,9 @@
 					'label' => 'Property Type Code',
 					'option_values' => $propertTypeArray
 				],
+				'attributes' => [
+					'id' => 'proptypecode'
+				],
 				'class' => 'form-control',
 				'required' => true
 			]);
@@ -110,6 +113,10 @@
 					'label' => 'Property Class Code',
 					'option_values' => $propertyClassArray
 				],
+				'attributes' => [
+					'id' => 'propclasscodes'
+				],
+				
 				'class' => 'form-control',
 				'required' => true
 			]);

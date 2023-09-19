@@ -1,12 +1,15 @@
 <?php
     use Form\InquiryForm;
-    load(['InquiryForm'],FORMS);
+    use Form\AdsForm;
+
+    load(['InquiryForm', 'AdsForm'],FORMS);
 
     $req = request()->inputs();
     $adDetailService = new ListingService();
     $accountService = new AccountService();
     $clientService = new ClientService();
     $inquiryForm = new InquiryForm();
+    $adsForm = new AdsForm();
     $isInquiryFormSubmitted = false;
     $adService = new AdService();
     
@@ -39,10 +42,26 @@
     ]);
 
     $inquiryForm->addAgentCode($adDetail['usercode']);
-    $inquiryForm->addFKAdsKey($adDetail['ad_recno']);
+    $inquiryForm->addFKAdsKey($adDetail['recno']);
 
-    $sharebut2 = "";
-    $sharebut3 = "";
+    $sharelink = request()->url();
+
+    $sharebut = '
+	    <div id="fb-root"></div>
+		<script>(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+		fjs.parentNode.insertBefore(js, fjs);
+		}(document, "script", "facebook-jssdk"));</script>
+
+		<div class="fb-share-button" 
+			data-href="'.$sharelink.'" 
+			data-layout="button_count"
+			data-size="large">
+		</div>
+	';
     $sharebut2 = "
         <script async src='https://platform.twitter.com/widgets.js' charset='utf-8'></script>
         <a href='https://twitter.com/intent/tweet?text=https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']."' class='twitter-follow-button btn btn-sm fb-bg-color-butt px-2' style='padding: 2px;' data-show-count='false' data-size='large' target='_blank'>
@@ -70,14 +89,23 @@
                                 <div class="align-self-center p-2 flex-grow-1">
                                     <span class="fs-5">Posted by <?php echo ucwords("{$account['memberfname']} {$account['memberlname']}");?></span><br>
                                     <small class="text-muted lh-1"><?php echo time_since($adDetail['dateinserted']);?></small>
+
+                                    <?php
+                                        if(whoIs())  {
+                                            echo '<div>';
+                                            echo wLinkDefault(_route('prop_show', [
+                                                'recno' => seal($adDetail['listing_recno'])
+                                            ]), 'Overview');
+                                            echo '</div>';
+                                        }
+                                    ?>
                                 </div>
                             </div>
                         </div>
                         <div class="align-self-start" style="display: show;">
                             <div class="d-flex justify-content-end">
                                 <div class="m-1"><?php echo $sharebut2;?></div>
-                                <div class="m-1"><?php echo $sharebut3;?></div>
-                                <div class="m-1"><?php echo $sharebut2;?></div>
+                                <div class="m-1"><?php echo $sharebut;?></div>
                             </div>
                             
                         </div>
@@ -101,12 +129,26 @@
                                 <?php echo ucwords($adDetail['listingdescription']);?>
                             </p>
                             <ul class="list-group list-group-flush">
-                                <li class='list-group-item p-1'>Location : <?php echo $adDetail['loccitycode'];?></li>
-                                <li class='list-group-item p-1'>Building Name: <?php echo $adDetail['buildingname'];?></li>
-                                <li class='list-group-item p-1'>Address : <?php echo $adDetail['propaddress'];?></li>
-                                <li class='list-group-item p-1'>Deposit : <?php echo amountHTML($adDetail['securitydeposit']);?></li>
-                                <li class='list-group-item p-1'>Minimun Contract : <?php echo $adDetail['mincontract'];?></li>
-                                <li class='list-group-item p-1'>Payment Terms: <?php echo $adDetail['paymentterm'];?></li>
+                                <?php
+                                    $propInfo = [
+                                        'loccitycode' => 'Location',
+                                        'buildingname' => 'Building Name',
+                                        'propaddress' => 'Address',
+                                        'securitydeposit' => 'Deposit',
+                                        'mincontract' => 'Minimun Contract',
+                                        'paymentterm' => 'Payment Terms',
+                                    ];
+
+                                    foreach(array_keys($propInfo) as $propKey) {
+                                        if(!empty($adDetail[$propKey])) {
+                                            $textValue = $adDetail[$propKey];
+                                            if(is_numeric($textValue)) {
+                                                $textValue = amountHTML($textValue);
+                                            }
+                                            echo "<li class='list-group-item p-1'>{$propInfo[$propKey]} : {$textValue}</li>";
+                                        }
+                                    }
+                                ?>
                             </ul>
                         </div>
                     </div>
@@ -144,8 +186,8 @@
                                                 
                                                 <?php if(!$isInquiryFormSubmitted) :?>
                                                     <div class="accordion-body p-0">
-                                                        <?php echo $inquiryForm->start()?>
                                                         <?php
+                                                            echo $inquiryForm->start();
                                                             echo $inquiryForm->get('agentcode');
                                                             echo $inquiryForm->get('fk_ads_key');
                                                         ?>
@@ -198,9 +240,12 @@
                     </div>
                 </div>
                 <br><br>
-                <div class="card-body d-flex justify-content-center">
-                    <button onclick="location.href=`dashboard.php`;" type="button" class="btn btn-info bg-col1 border-0 text-white">Look for more</button>
-                </div>
+                <?php if(!whoIs()) :?>
+                    <div class="card-body d-flex justify-content-center">
+                        <button onclick="location.href='<?php echo _route('landing_index')?>';" 
+                        type="button" class="btn btn-info bg-col1 border-0 text-white">Look for more</button>
+                    </div>
+                <?php endif?>
                 <br><br>
             </div>
         </div>

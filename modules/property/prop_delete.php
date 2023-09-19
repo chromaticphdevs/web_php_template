@@ -48,6 +48,9 @@
         return redirect(_route('prop_create'));
     }
 
+    $imageFolder = $listing['module_folder_name'];
+    $listingImages = $listingService->getImages($imageFolder);
+
     csrfReload();
     $csrfToken = csrfGet();
 ?>
@@ -65,7 +68,7 @@
                     'delete_approve' => 'yes',
                     'recno' => seal($recno)
                 ]), 'Yes Delete This Property', [
-                    'class' => 'btn btn-danger'
+                    'class' => 'btn btn-danger form-verify-action'
                 ]);
 
                 echo wLinkDefault(_route('prop_show', [
@@ -113,6 +116,18 @@
                 </table>
             </div>
         </div>
+        <?php echo wDivider(20)?>
+        <div class="card-body">
+            <h4 class="card-title">Images</h4>
+            <div class="row">
+                <?php foreach($listingImages as $key => $row) :?>
+                    <div class="col-md-4">
+                        <img src="<?php echo URL_PUBLIC.'/uploads/images/'.$imageFolder.'/'.$row?>" 
+                        alt="Property Image" style="width:100%">
+                    </div>
+                <?php endforeach?>
+            </div>
+        </div>
 
         <?php echo wDivider()?>
 
@@ -129,10 +144,7 @@
                             <div class="card-body">
                                 <ul>
                                     <li><?php echo $adsForm->getLabel('adstitle')?> : <?php echo $ad['adstitle']?></li>
-                                    <li><?php echo $adsForm->getLabel('adsdesc')?> : <?php echo $ad['adsdesc']?></li>
                                     <li><?php echo $adsForm->getLabel('price')?> : <?php echo $ad['price']?></li>
-                                    <li><?php echo $adsForm->getLabel('securitydeposit')?> : <?php echo $ad['securitydeposit']?></li>
-                                    <li><?php echo $adsForm->getLabel('mincontract')?> : <?php echo $ad['mincontract']?></li>
                                 </ul>
                             </div>
                         </div>

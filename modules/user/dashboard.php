@@ -53,7 +53,7 @@
 			<div class="row m-2">
 				<div class="col-lg-4 mb-3 p-1">
 					<!-- Profile -->
-					<div onclick="loadMyURL('profile.php')" class="bg-col1 text-white rounded h-100 mypointer">
+					<div onclick="loadMyURL('<?php echo _route('user_profile')?>')" class="bg-col1 text-white rounded h-100 mypointer">
 						<div class="row g-0">
 							<div class="col-4 text-center p-4">
 							<img src="<?php echo $ID_picture;?>" class="img-fluid rounded-circle" alt="id" style="background-color: #ffff;"><br>
@@ -72,7 +72,7 @@
 				</div>
 				<div class="col-lg-2 mb-3 p-1">
 					<!-- Star -->
-					<div onclick="loadMyURL('ads.php')" class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
+					<div class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
 						<i class="fa fa-3x fa-star"></i><br>
 						<small class="">Star</small><br>
 						<span><b><?php echo whoIs('stars');?></b></span>
@@ -80,25 +80,22 @@
 				</div>
 				<div class="col-lg-2 mb-3 p-1">
 					<!-- Listing -->
-					<div class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
-						<a href="prop_create"><i class="fa fa-3x fa-clipboard-list"></i></a><br>
+					<div onclick="loadMyURL('<?php echo _route('prop_create')?>')" class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
+						<i class="fa fa-3x fa-clipboard-list"></i><br>
 						<small class="">Listing</small><br>
 						<span><b><?php echo $listingcount;?></b></span>
 					</div>
 				</div>
 				<div class="col-lg-2 mb-3 p-1">
-					<div class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
-						<a href="ads_create"><i class="fa fa-3x fa-newspaper"></i></a><br>
+					<div onclick="loadMyURL('<?php echo _route('ads_create')?>')" class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
+						<i class="fa fa-3x fa-newspaper"></i><br>
 						<small class="">Ads</small><br>
 						<span>On: <b><?php echo $adscount;?></b> Off: <b><?php echo $adscountoff;?></b></span>
 					</div>
 				</div>
 				<div class="col-lg-2 mb-3 p-1">
-					<div class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
-						<a href="inq_create">
-							<i class="fa fa-3x fa-question-circle"></i>
-						</a>
-						<br>
+					<div onclick="loadMyURL('<?php echo _route('inq_create')?>')" class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
+						<i class="fa fa-3x question-circle"></i><br>
 						<small class="">Inquiries</small><br>
 						<span>New: <b><?php echo $inquirymsg;?></b> Hide: <b><?php echo $inquirymsgoff;?></b></span>
 					</div>
@@ -125,26 +122,13 @@
 	</div>
 
 	<?php echo privatemessage_tag();?>
-
-	<script type="text/javascript">
-		var htmltbname = "<?php echo $htmltbname;?>";
-		var htmlpage = "<?php echo $htmlpage;?>";
-		loaderon();
-		window.addEventListener("load", function(){
-			loadnews("","","",1,htmlpage);
-			loaderoff();
-		});
-
-		function loadnews(htmltbname,searchdata,sort,page,htmlpage){
-			loaderon();
-			pagenumcurrent = page;
-			$("#load_here").load("router.php",{
-				load_news_page: page,
-				load_news_htmlpage: htmlpage,
-				load_news_what: "no"
-		    });
-		}
-	</script>
 </body>
 <?php endbuild()?>
+	<?php build('scripts')?>
+	<script type="text/javascript">
+		function loadMyURL(url) {
+			window.location.href = url;
+		}
+	</script>
+	<?php endbuild()?>
 <?php loadTo()?>

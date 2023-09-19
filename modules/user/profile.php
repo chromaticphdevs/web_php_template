@@ -18,6 +18,10 @@
     if(isSubmitted()) {
         $post = request()->posts();
         if(!empty($post['btn_account_detail'])) {
+
+            $post['membercellno'] = str_to_mobile_number($post['membercellno']);
+            $post['memberviberno'] = str_to_mobile_number($post['memberviberno']);
+
             $isOkay = $serviceAccount->updateAccountDetail($post, $post['recno']);
 
             if(!$isOkay) {
@@ -206,4 +210,26 @@
         </div>
     </div>
 <?php endbuild()?>
+
+<?php build('scripts') ?>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var memberInfo = $('#memberinfo');
+            toggleMemberLicense(memberInfo.val());
+
+            $(memberInfo).change(function(){
+                let value = $(this).val();
+                toggleMemberLicense(value);
+            });
+
+            function toggleMemberLicense(memberInfoValue) {
+                if(memberInfoValue == 'broker') {
+                    $("#memberlicense").removeAttr('readonly');
+                } else {
+                    $("#memberlicense").prop('readonly', 1);
+                }
+            }
+        });
+    </script>
+<?php endbuild ()?>
 <?php loadTo()?>

@@ -10,6 +10,10 @@
     {
         return explode(',' , $string);
     }
+
+    function str_to_mobile_number($number) {
+        return preg_replace("/[^0-9+]/", "", $number);
+    }
     
     function bool_convert($bool , $response = ['Yes' , 'No'])
     {

@@ -211,7 +211,7 @@
 							<?php echo $listing['listingcode']?>
 						</div>
 						<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
-						<div class='p-4' style='border: ;'>
+						<div class='p-4'>
 							<p class='mb-2 text-truncate'><?php echo $listing['listingcode']?></p>
 							<div class='mt-0'>
 							<?php echo wLinkDefault(_route('prop_show', [

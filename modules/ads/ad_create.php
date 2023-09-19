@@ -69,6 +69,7 @@ if(!empty($req['filter'])) {
 						<h5><i class="me-3 fa fa-clipboard-list"></i>Create Ads</h5>
 					</button>
 				</h2>
+
 				<div id="flush-collapseOne" class="accordion-collapse collapse?>" 
 				aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush">
 					<div class="accordion-body p-0">
@@ -197,12 +198,7 @@ if(!empty($req['filter'])) {
 					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
 					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
 						<div class='p-4' style='border:""'>
-						<?php html_ads_star_link($row['star_id'], $row['status'], _route('ads_actions', [
-							'action' => 'toggle_star',
-							'recno' => seal($row['recno']),
-							'returnTo' => seal(_route('ads_create'))
-						]));?>
-						<p class='mb-2 text-truncate'><?php echo $row['listingcode']?><br>
+						<p class='mb-2 text-truncate'><?php echo $row['price']?><br>
 						<small class='text-truncate'><?php echo $row['listtypecode']?></small>
 						</p>
 						<div class='mt-0'>
@@ -212,12 +208,8 @@ if(!empty($req['filter'])) {
 								]), '', ['icon' => 'fa fa-edit', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
 								echo wLinkDefault(_route('prop_detail', [
-									'propId' => seal($row['recno'])
+									'adId' => seal($row['recno'])
 								]), '', ['icon' => 'fa fa-eye', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
-
-								echo wLinkDefault(_route('ads_delete', [
-									'propId' => seal($row['recno'])
-								]), '', ['icon' => 'fa fa-trash', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
 								echo wLinkDefault(_route('ads_actions', [
 									'action' => 'toggle_ad',

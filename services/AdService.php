@@ -19,6 +19,23 @@
 
         public function store($adData) {
             $toInsertData = parent::_getFillablesOnly($adData);
+
+            if(!empty($toInsertData['securitydeposit'])) {
+                $this->_validateNumberOnly($toInsertData['securitydeposit'], 'Security Deposit');
+            }
+
+            if(!empty($toInsertData['downpayment'])) {
+                $this->_validateNumberOnly($toInsertData['downpayment'], 'DownPayment');
+            }
+
+            if(!empty($toInsertData['price'])) {
+                $this->_validateNumberOnly($toInsertData['price'], 'Price');
+            }
+
+            if(!empty($this->getErrors())) {
+                return false;
+            }
+            
             $id =  parent::store($toInsertData);
 
             if($id) {
@@ -31,6 +48,36 @@
             return $id;
         }
 
+        public function updateDetails($adData, $condition) {
+            $toUpdateData = parent::_getFillablesOnly($adData);
+
+            if(!empty($toUpdateData['securitydeposit'])) {
+                $this->_validateNumberOnly($toUpdateData['securitydeposit'], 'Security Deposit');
+            }
+
+            if(!empty($toUpdateData['downpayment'])) {
+                $this->_validateNumberOnly($toUpdateData['downpayment'], 'DownPayment');
+            }
+
+            if(!empty($toUpdateData['price'])) {
+                $this->_validateNumberOnly($toUpdateData['price'], 'Price');
+            }
+
+            if(!empty($this->getErrors())) {
+                return false;
+            }
+
+            return parent::update($toUpdateData, $condition);
+        }
+
+        private function _validateNumberOnly($string, $key) {
+            if(!is_numeric($string)) {
+                $this->addError("Invalid entry on {$key}");
+                return false;
+            }
+
+            return true;
+        }
         public function getAll($params = [])
         {
             $where  = null;

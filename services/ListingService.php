@@ -61,18 +61,6 @@
                 "SELECT * FROM {$this->_tableName} as listing
                   {$where} {$order} {$limit}"
             );
-            // $this->databaseInstance->query(
-            //     "SELECT ads.*,listing_type.*,
-            //     listing.recno as listing_recno,listing.*, 
-            //     ads.recno as ad_recno
-            //         FROM {$this->_tableName} as listing 
-            //             LEFT JOIN b_ads as ads 
-            //                 ON listing.listingkeys = ads.listingcode
-            //             LEFT JOIN a_listingtype as listing_type
-            //                 ON ads.listtypecode = listing_type.listtypecode
-                            
-            //     {$where}{$order}{$limit}"
-            // );
             return $this->databaseInstance->resultSet();
         }
 

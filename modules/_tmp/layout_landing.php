@@ -145,7 +145,7 @@
     <script src="<?php echo _path_tmp('main/js/all.min.js')?>"></script>
     <script src="<?php echo _path_tmp('main/dropzone/dropzone.min.js')?>"></script>
     <script src="<?php echo _path_tmp('main/myjs.js?ver=$curr')?>"></script>
-
+	<script src="<?php echo _path_public('js/prop.js')?>"></script>
 	<?php produce('scripts')?>
 </body>
 </html>

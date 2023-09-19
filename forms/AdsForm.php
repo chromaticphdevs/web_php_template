@@ -101,7 +101,8 @@
                 'class' => 'form-control',
                 'options' => [
                     'label' => 'Price'
-                ]
+                ],
+                'required' => true
             ]);
         }
 

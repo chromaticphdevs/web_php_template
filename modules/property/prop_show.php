@@ -27,7 +27,8 @@
     $ads = $adService->getAll([
         'where' => [
             'ads.listingcode' => $listing['listingkeys']
-        ]
+        ],
+        'order' => 'ads.recno desc'
     ]);
     
     
@@ -127,6 +128,9 @@
                 <div class="row">
                 <?php foreach($ads as $key => $row):?>
                     <?php
+                        $toggler = $row['status'];
+                        $togglerClass = $row['status'] == 'on' ? 'btn-success' : 'btn-danger';
+
                         if($listingImages) {
                           $imageA = "public/uploads/images/{$row['module_folder_name']}/{$listingImages[0]}";	
                         } else {
@@ -145,7 +149,7 @@
                                             'recno' => seal($recno)
                                         ]))
                                     ]));?>
-                                    <p class='mb-2 text-truncate'><?php echo $row['listingcode']?><br>
+                                    <p class='mb-2 text-truncate'><?php echo $row['price']?><br>
                                     <small class='text-truncate'><?php echo $row['listtypecode']?></small>
                                     </p>
                                     <div class='mt-0'>
@@ -158,9 +162,14 @@
                                                 'recno' => seal($row['recno'])
                                             ]), '', ['icon' => 'fa fa-edit', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
+                                            echo wLinkDefault(_route('ads_actions', [
+                                                'action' => 'toggle_ad',
+                                                'recno'  => seal($row['recno'])
+                                            ]), '', ['icon' => 'fa fa-toggle-'.$toggler, 'class' => "btn btn-sm {$togglerClass} rounded-circle"]);
+
                                             echo wLinkDefault(_route('ads_delete', [
-                                                'recno' => seal($row['recno'])
-                                            ]), '', ['icon' => 'fa fa-trash', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
+                                                'recno' => seal($row['recno']),
+                                            ]), '', ['icon' => 'fa fa-trash', 'class' => 'btn btn-sm btn-outline-light rounded-circle form-verify-action']);
                                         ?>
                                     </div>
                             </div>

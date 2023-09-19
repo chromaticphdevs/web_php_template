@@ -1,17 +1,32 @@
 <?php
-
-use function PHPSTORM_META\map;
-
- build('content') ?>
-<?php
+    $req = request()->inputs();
+    $condition = null;
     $clientService = new ClientService();
-    $clientMessages = $clientService->getAll([
-        'where' => [
+
+    if(!empty($req['payloads'])) {
+        $payload = unseal($req['payloads']);
+
+        $condition = [
             'client.agentcode' => whoIs('usercode'),
-            'client.recno' => 1 
+            'client.clientemail' => $payload['email'],
+        ];
+    } else {
+        $condition = [
+            'client.agentcode' => whoIs('usercode')
+        ];
+    }
+
+    $clientMessages = $clientService->getAll([
+        'where' => $condition
+    ]);
+
+    $clients = $clientService->getClients([
+        'where' => [
+            'client.agentcode' => whoIs('usercode')
         ]
     ]);
 ?>
+<?php build('content') ?>
     <!-- Catalogue -->
 <div class="card">
     <!-- Catalogue Result-->
@@ -47,7 +62,7 @@ use function PHPSTORM_META\map;
                                 </div>
                                 <div class="form-check form-check-inline">
                                 <input class="form-check-input mychk" type="checkbox" value="" id="par4">
-                                <label class="form-check-label" for="par4">Asnwered</label>
+                                <label class="form-check-label" for="par4">Answered</label>
                                 </div>
                             </div>
                         </div>
@@ -56,13 +71,21 @@ use function PHPSTORM_META\map;
                 </ul>
                 <br>
                 <ul id="loadclienthere" class="list-group text-left">
-                    <li onclick='loadclientproperty(`$email`,$a)' class='list-group-item text-secondary list-group-item-action'>
-                        <div class='d-flex'>
-                            <i class='fa fa-user me-2 align-middle align-self-center text-$color'></i>
-                            <span class='align-middle align-self-center flex-grow-1'>Mark Gonzales test</span>
-                            <span class='align-middle align-self-center'><i class='fa fa-caret-right'></i></span>
-                        </div>
-                    </li>
+                    <?php foreach($clients as $key => $client) :?>
+                        <li class='list-group-item text-secondary list-group-item-action'>
+                            <a href="<?php echo _route('inq_create', null, [
+                                'payloads' => seal([
+                                    'email' =>  $client['clientemail']
+                                ])
+                            ])?>">
+                                <div class='d-flex'>
+                                    <i class='fa fa-user me-2 align-middle align-self-center text-$color'></i>
+                                    <span class='align-middle align-self-center flex-grow-1'><?php echo $client['clientfname'] . ' ' .$client['clientlname']?></span>
+                                    <span class='align-middle align-self-center'><i class='fa fa-caret-right'></i></span>
+                                </div>
+                            </a>
+                        </li>
+                    <?php endforeach?>
                 </ul>
             </div>
             <div class="col-sm-8">
@@ -74,7 +97,11 @@ use function PHPSTORM_META\map;
                             <div class="align-middle align-self-center flex-grow-1">
                                 <span class="">Client</span>
                             </div>
-
+                            <?php
+                                if(!empty($req['payloads'])) {
+                                    echo wLinkDefault(_route('inq_create'), 'Remove Filter');
+                                }
+                            ?>
                         </div>
                         <div id="loadclientmessages" class="border bg-light p-3 mb-3" 
                             style="max-height: 500px; overflow: hidden; overflow-y: auto;">
@@ -96,7 +123,7 @@ use function PHPSTORM_META\map;
                                                 </label>
                                                 <div class="mt-2 mb-2">
                                                     <div>LINK : <?php echo wLinkDefault(_route('prop_detail', [
-                                                        'propId' => seal($row['fk_ads_key'])
+                                                        'adId' => seal($row['fk_ads_key'])
                                                     ]), $clientMessage)?></div>
 
                                                     <div>TYPE : <?php echo $row['listtypecode']?></div>

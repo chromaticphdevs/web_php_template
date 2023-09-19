@@ -37,7 +37,7 @@
                 self::TYPE_BROKER => self::TYPE_BROKER,
                 self::TYPE_AGENT => self::TYPE_AGENT,
                 self::TYPE_OWNER => self::TYPE_OWNER,
-                self::TYPE_BROKER => "owner's representative"
+                self::TYPE_REPRESENTATIVE => "owner's representative"
             ]; 
         }
 
@@ -103,7 +103,6 @@
             }
 
             $userFilteredData = parent::_getFillablesOnly($userData);
-
             $isOkayUpdate = parent::update($userFilteredData, [
                 'recno' => $userRecno
             ]);
@@ -278,6 +277,18 @@
                     $errors [] = $this->getRetVal('VALIDATION_EMAIL');
                 }
             }
+
+            if(!empty($userData['membercellno'])) {
+                if(strlen($userData['membercellno']) < 10) {
+                    $errors [] = "Invalid Mobile Number";
+                }
+            }
+
+            if(!empty($userData['memberviberno'])) {
+                if(strlen($userData['memberviberno']) < 10) {
+                    $errors [] = "Invalid Viber Number";
+                }
+            }
             
             if(isset($userData['memberfname'])) {
                 if(!$this->_validateCharLength($userData['memberfname'], 'First Name')){
@@ -288,6 +299,13 @@
             if(isset($userData['memberlname'])) {
                 if(!$this->_validateCharLength($userData['memberlname'], 'Last Name')){
                     $errors [] = "Last Name is required";
+                }
+            }
+
+            if(isset($userData['memberinfo']) && $userData['memberinfo'] == self::TYPE_BROKER) {
+                if(empty($userData['memberlicense'])) {
+                    $errors [] = "Member Type : ". self::TYPE_BROKER . ' must have a license number' ;
+                    return false;
                 }
             }
             return $errors;

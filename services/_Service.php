@@ -1,8 +1,7 @@
 <?php 
 	use Core\Database;
 	use Core\DatabaseHelper;
-	require_once 'core/Database.php';
-	require_once 'core/DatabaseHelper.php';
+	load(['Database', 'DatabaseHelper'], CORE);
 	
 	class _Service{
 
@@ -205,7 +204,7 @@
 
 				if( isEqual($defaultCondition , '=')) 
 				{
-					$isNotCondition = substr( $param_value , 0 ,1); //get exlamation
+					$isNotCondition = substr($param_value , 0 ,1); //get exlamation
 					$isNotCondition = stripos($isNotCondition , '!');
 
 					if( $isNotCondition === FALSE )
