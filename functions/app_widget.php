@@ -28,3 +28,22 @@
             <div style="margin-top:{$size}px"> </div>
         EOF;
     }
+
+    function wButton($link, $text = 'Submit', $btn, $attributes =[]) {
+        $icon = isset($attributes['icon']) ? "<i class='fa {$attributes['icon']}' style='width:15px'></i>" : '';
+        if(isset($attributes['icon'])) {
+            unset($attributes['icon']);
+        }
+
+        if(!empty($attributes['class'])) {
+            $attributes['class'] = $attributes['class'] .' btn btn-'.$btn;
+        }else{
+            $attributes['class'] = 'btn btn-'.$btn;
+        }
+        
+		$attributes = is_null($attributes) ? $attributes : keypairtostr($attributes);
+
+        return <<<EOF
+			<a href="{$link}" {$attributes}>{$icon} {$text}</a>
+		EOF;
+    }

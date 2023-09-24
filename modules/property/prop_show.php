@@ -149,7 +149,7 @@
                                             'recno' => seal($recno)
                                         ]))
                                     ]));?>
-                                    <p class='mb-2 text-truncate'><?php echo $row['price']?><br>
+                                    <p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
                                     <small class='text-truncate'><?php echo $row['listtypecode']?></small>
                                     </p>
                                     <div class='mt-0'>

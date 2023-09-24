@@ -32,7 +32,8 @@
 		'property' => 'prop_',
 		'ads' => 'ad_',
 		'landing' => 'landing_',
-		'inq' => 'inq_'
+		'inq' => 'inq_',
+		'intent' => 'intent_'
 	];
 
 

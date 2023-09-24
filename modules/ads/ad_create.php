@@ -34,7 +34,8 @@ if(isSubmitted()) {
 			'recno' => seal($listing['recno'])
 		]));
 	} else {
-		Flash::set('Unable to add new Ads', 'danger');
+		Flash::set('Unable to add new Ads, '.arr_to_str($adService->getErrors()) , 'danger');
+		return request()->return();
 	}
 	return redirect(_route('ads_create'));
 }
@@ -198,7 +199,7 @@ if(!empty($req['filter'])) {
 					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
 					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
 						<div class='p-4' style='border:""'>
-						<p class='mb-2 text-truncate'><?php echo $row['price']?><br>
+						<p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
 						<small class='text-truncate'><?php echo $row['listtypecode']?></small>
 						</p>
 						<div class='mt-0'>

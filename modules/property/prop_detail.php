@@ -89,16 +89,6 @@
                                 <div class="align-self-center p-2 flex-grow-1">
                                     <span class="fs-5">Posted by <?php echo ucwords("{$account['memberfname']} {$account['memberlname']}");?></span><br>
                                     <small class="text-muted lh-1"><?php echo time_since($adDetail['dateinserted']);?></small>
-
-                                    <?php
-                                        if(whoIs())  {
-                                            echo '<div>';
-                                            echo wLinkDefault(_route('prop_show', [
-                                                'recno' => seal($adDetail['listing_recno'])
-                                            ]), 'Overview');
-                                            echo '</div>';
-                                        }
-                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +97,6 @@
                                 <div class="m-1"><?php echo $sharebut2;?></div>
                                 <div class="m-1"><?php echo $sharebut;?></div>
                             </div>
-                            
                         </div>
                     </div>
                 </div>
@@ -151,9 +140,17 @@
                                 ?>
                             </ul>
                         </div>
+                        <?php
+                            if(whoIs())  {
+                                echo '<div>';
+                                echo wButton(_route('prop_show', [
+                                    'recno' => seal($adDetail['listing_recno'])
+                                ]), 'Overview', 'primary');
+                                echo '</div>';
+                            }
+                        ?>
                     </div>
                     <div class="col-sm-6">
-                        
                             <div id="carouselWithIndicators" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">
                                     <?php foreach($fileImages as $key => $file) :?>
@@ -173,7 +170,9 @@
                                     <span class="visually-hidden">Next</span>
                                 </a>
                             </div>
-                            <div class="card mt-2" style="display: <?php echo $display3;?>">
+                            
+                            <?php if(!whoIs()) :?>
+                            <div class="card mt-2">
                                 <div class="card-body p-2">
                                     <div class="accordion accordion-flush" id="accordionFlush">
                                         <div class="accordion-item">
@@ -237,6 +236,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php endif?>
                     </div>
                 </div>
                 <br><br>

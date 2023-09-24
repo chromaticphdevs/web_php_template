@@ -44,10 +44,12 @@
         }
 
         if(!empty($post['btn_email'])) {
-            $isOkay = $serviceAccount->updateEmail($post, $post['recno']);
+            $isOkay = $serviceAccount->requestChangeEmail($post['recno'], $post['email']);
 
             if($isOkay) {
+                session_destroy();
                 Flash::set(implode(',', $serviceAccount->getMessages()), 'success','account_email_message');
+                return redirect(_route('landing_auth'));
             } else {
                 Flash::set(implode(',', $serviceAccount->getErrors()), 'danger','account_email_message');
             }

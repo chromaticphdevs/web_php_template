@@ -98,4 +98,27 @@
     function _error($message = ERR_INVALID_REQUEST) {
         echo die($message);
     }
+
+    function _mail_base($subject, $content, $recipients = [],  $header = []) 
+    {
+        $plugins = require APPROOT.DS.'config/plugins.php';
+
+        if(empty($header['from'])){
+            $header['from'] = $plugins['mailAccount']['master']['key'];
+        }
+
+        if(empty($header['replyTo'])) {
+            $header['replyTo'] = EMAIL_B;
+        }
+
+        $headerItem = "From: <{$header['from']}> \r\n";
+        $headerItem .= "Reply-To: ".$header['replyTo']." \r\n";
+        $headerItem .= "Content-type: text/html \r\n";
+
+        if(is_array($recipients)) {
+            $recipients = implode(',', $recipients);
+        } 
+
+        mail($recipients, $subject, $content, $headerItem);
+    }
 ?>

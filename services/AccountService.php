@@ -152,7 +152,23 @@
             return true;
         }
 
-        public function updateEmail($userData, $userRecno) {
+        public function updateEmail($email, $userRecno) {
+            $isOkay = parent::update([
+                'email' => $email
+            ], [
+                'recno' => $userRecno
+            ]);
+
+            if($isOkay) {
+                $this->addMessage("Email Updated");
+                return true;
+            } else {
+                $this->addError("Something went wrong");
+                return false;
+            }
+        }
+
+        public function updateEmailCheck($userData, $userRecno) {
             $errors = [];
             //append for email checking
             $this->accountValidation($userData, $errors);
@@ -173,19 +189,7 @@
                 return false;
             }
 
-            $isOkay = parent::update([
-                'email' => $userData['email']
-            ], [
-                'recno' => $userRecno
-            ]);
-
-            if($isOkay) {
-                $this->addMessage("Email Updated");
-                return true;
-            } else {
-                $this->addError("Something went wrong");
-                return false;
-            }
+            return true;
         }
 
         private function _validateEmail($email, $userRecno = '') {
@@ -253,6 +257,49 @@
             if($user) {
                 Session::set('auth', $user);
                 return Session::get('auth');
+            } else {
+                return false;
+            }
+        }
+
+        public function requestChangeEmail($userId, $newEmail) {
+            $validateEmail = $this->_validateEmail($newEmail, $userId);
+
+            if(!$validateEmail) {
+                $this->addError($this->getRetVal('VALIDATION_EMAIL'));
+                return false;
+            }
+
+            $user = parent::single([
+                'where' => [
+                    'recno' => $userId
+                ]
+            ]);
+
+            $intentService = new IntentService();
+
+            $intentID = $intentService->addRecord([
+                'category' => IntentService::REQUEST_CHANGE_EMAIL,
+                'intent_value' => json_encode([
+                    'user_id' => $userId,
+                    'email'   => $newEmail,
+                ]),
+                'intent_status' => 'pending',
+                'created_at' => nowMilitary()
+            ]);
+
+            if($intentID) {
+                $approveChangeEmailRequestHREF = URL.DS.'intent_actions?action=email_request_approve&intent_id='.seal($intentID);
+                //send email
+                $subject = "New Email Re-verification from ".COMPANY_NAME;
+                $message = "Good day {$user['memberlname']} {$user['memberfname']} ,<br>";
+                $message .= "Pls follow the link below to complete your Email re-verification...<br>";
+                $message .= "<a href='{$approveChangeEmailRequestHREF}'>Verify My New Email Address!</a>";
+
+                _mail_base($subject, $message, [
+                    $newEmail
+                ]);
+                return true;
             } else {
                 return false;
             }
