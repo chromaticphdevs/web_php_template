@@ -66,7 +66,6 @@
             if(!empty($this->getErrors())) {
                 return false;
             }
-
             return parent::update($toUpdateData, $condition);
         }
 
@@ -98,12 +97,19 @@
 
             $this->databaseInstance->query(
                 "SELECT ads.*,listing_type.*, listing.recno as listing_recno,listing.*,
-                    ads.recno as recno, ads.listingcode as listingcode
+                    ads.recno as recno, ads.listingcode as listingcode,
+                    a_locationcity.loccitytag, a_propertyclass.propclasstag
                     FROM {$this->_tableName} as ads
                     LEFT JOIN b_listing as listing 
                         ON listing.listingkeys = ads.listingcode
                     LEFT JOIN a_listingtype as listing_type
                         ON ads.listtypecode = listing_type.listtypecode
+
+                    LEFT JOIN a_locationcity on 
+                        a_locationcity.loccitycode = listing.loccitycode
+
+                    LEFT JOIN a_propertyclass ON
+                        a_propertyclass.propclasscode = listing.propclasscode
 
                     {$where} {$order} {$limit}"
             );

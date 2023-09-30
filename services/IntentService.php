@@ -2,7 +2,8 @@
 
     class IntentService extends _Service {
         public $_tableName = 'intents';
-        const REQUEST_CHANGE_EMAIL = 'REQUEST_CHANGE_EMAIL';
+        const REQUEST_PASSWORD_CHANGE = 'REQUEST_PASSWORD_CHANGE';
+        const REQUEST_EMAIL_CHANGE = 'REQUEST_EMAIL_CHANGE';
 
         public $_columnFillables = [
             'category',
@@ -14,6 +15,7 @@
         ];
 
         public function addRecord($intentData) {
+            $intentData['created_at'] = nowMilitary();
             $contentFillables = parent::_getFillablesOnly($intentData);
             return parent::store($contentFillables);
         }

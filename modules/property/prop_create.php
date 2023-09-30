@@ -47,45 +47,49 @@
 		$post = request()->posts();
 		$isOkayImageCheck = $listingService->imageRequiredCheck($post['module_folder_name']);
 
+		if($isOkayImageCheck) {
+			$response = $listingService->store($post);
+			/**
+			 * checks if returns true or false
+			 */
+			if($response) {
+				/**
+				 * print notice on the screen for successfull entry
+				 */
+				Flash::set(arr_to_str($listingService->getMessages()));
+				return redirect(_route('prop_show', [
+					'recno' => seal($response)
+				]));
+			} else {
+				/**
+				 * print notice on the screen for unsuccessfull entry
+				 */
+				Flash::set('Unable to create listing', 'danger');
+			}
+		}
 		if(!$isOkayImageCheck) {
 			Flash::set("Listing cannot be uploaded, All listing must have photos", 'danger');
-			return request()->return();
 		}
-		$response = $listingService->store($post);
-		/**
-		 * checks if returns true or false
-		 */
-		if($response) {
-			/**
-			 * print notice on the screen for successfull entry
-			 */
-			Flash::set(arr_to_str($listingService->getMessages()));
-			return redirect(_route('prop_show', [
-				'recno' => seal($response)
-			]));
-		} else {
-			/**
-			 * print notice on the screen for unsuccessfull entry
-			 */
-			Flash::set('Unable to create listing', 'danger');
-		}
+		
 	}
 
 	$imageFolder = random_letter(10);
 	$listingForm->setValue('module_folder_name', $imageFolder);
+
+	$isSubmitted = isSubmitted();
 ?>
 <div class="card">
 	<div class="card-body">
-		<div class="accordion accordion-flush" id="accordionFlush">
+		<div class="accordion" id="accordionExample">
 			<div class="accordion-item">
-				<h2 class="accordion-header" id="flush-headingOne">
-					<button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-						<h5><i class="me-3 fa fa-clipboard-list"></i>Create New Listing</h5>
+				<h2 class="accordion-header" id="headingTwo">
+					<button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
+						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isSubmitted ? 'true' : 'false'?>" aria-controls="collapseTwo">
+						<i class="me-3 fa fa-clipboard-list"></i>Create New Listing
 					</button>
 				</h2>
-				<div id="flush-collapseOne" class="accordion-collapse" 
-				aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush">
-					<div class="accordion-body p-0">
+				<div id="collapseTwo" class="<?php echo $isSubmitted ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
 						<?php Flash::show()?>
 						<?php echo $listingForm->start()?>
 							<?php echo $listingForm->get('usercode')?>
@@ -125,7 +129,7 @@
 								<div>
 									<form action="#">
 										<input type="file" class="my-pond" name="filepond"/>
-										</form>
+									</form>
 								</div>
 							</div>
 						</div>

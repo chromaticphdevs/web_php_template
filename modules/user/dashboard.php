@@ -5,6 +5,7 @@
     $serviceAds = new AdService();
     $serviceClient = new ClientService();
 	$serviceNews = new NewsService();
+	$serviceAccount = new AccountService();
 
     $whoIsUserCode = whoIs('usercode');
     
@@ -28,6 +29,12 @@
         ]
     ]);
 
+	$starCount = $serviceAccount->single([
+		'where' => [
+			'recno' => whoIs('recno')
+		]
+	])->star_id ?? 0;
+
     $inquirymsg = $serviceClient->count([
         'where' => [
             'agentcode' => $whoIsUserCode,
@@ -44,12 +51,13 @@
 
 	$news = $serviceNews->getAll();
 
-	$ID_picture = DEFAULT_PROFILE_IMAGE;
+	$ID_picture = !empty(whoIs('profile')) ? whoIs('profile') : DEFAULT_PROFILE_IMAGE;
 ?>
 <body class="backcolor">
 	<!-- Main -->
 	<div class="card mb-4">
 		<div id="" class="card-body">
+			<?php Flash::show()?>
 			<div class="row m-2">
 				<div class="col-lg-4 mb-3 p-1">
 					<!-- Profile -->
@@ -75,7 +83,7 @@
 					<div class="bg-col1 text-white rounded h-100 text-center p-4 mypointer">
 						<i class="fa fa-3x fa-star"></i><br>
 						<small class="">Star</small><br>
-						<span><b><?php echo whoIs('stars');?></b></span>
+						<span><b><?php echo $starCount;?></b></span>
 					</div>
 				</div>
 				<div class="col-lg-2 mb-3 p-1">

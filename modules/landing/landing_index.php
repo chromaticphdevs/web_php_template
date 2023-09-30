@@ -77,7 +77,8 @@
         <div class="collapse navbar-collapse hide flex-md-row-reverse" id="nav1">
             <?php 
                 Form::open([
-                    'method' => 'get'
+                    'method' => 'get',
+                    'action' => 'landing_index'
                 ]);
                 Form::hidden('filter', 'listing_filter');
             ?>
@@ -126,7 +127,8 @@
                         <button id="A_find" type="submit" role="button" class="btn btn-warning" style="max-width: 100px;">
                             <i class="fa fa-search"></i>
                         </button>
-                        <button onclick="location.href=`landing_auth`;" type="button" class="btn btn-info bg-col1 border-0 text-white">List your property</button>
+                        <button onclick="location.href=`landing_login`;" type="button" 
+                        class="btn btn-info bg-col1 border-0 text-white">List your property</button>
                     </div>
             </div>
             <?php Form::close()?>
@@ -168,12 +170,11 @@
                         <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
                         <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
                             bg-dark bg-opacity-50 rounded-bottom p-2'>
-                            <div class='text-end'><?php echo $listing['listingcode']?></div>
-                            <div class='text-end'><?php echo $listing['proptypecode']?><?php echo $listing['buildingname']?></div>
-                            <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo  $listing['price']?></div>
+                            <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                            <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
                             <div class='text-end text-truncate my-0 py-0'>
                                 <i class='fa fa-map-marker-alt me-2'></i>
-                                <?php echo $listing['loccitycode']?>
+                                <?php echo $listing['loccitytag']?>
                             </div>
                         </div>
                     </div>

@@ -24,13 +24,13 @@ if(isSubmitted()) {
     ]);
 	
 	if($result) {
-
 		Flash::set("Ads Updated successfully");
 		return redirect(_route('ads_edit', [
-			'recno' => seal($post['recno'])
+			'recno' => seal($req['recno'])
 		]));
 	} else {
 		Flash::set('Unable to add new Ads', 'danger');
+		return request()->return();
 	}
 	// return redirect(_route('ads_edit?recno='.seal($post['recno'])));
 }
@@ -42,7 +42,7 @@ $adInfo = $adService->single([
         'ads.recno' => $adId
     ]
 ]);
-	
+
 $listing = $listingService->single([
 	'where' => [
 		'listing.listingkeys' => $adInfo['listingcode']

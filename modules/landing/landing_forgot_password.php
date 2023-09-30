@@ -1,6 +1,5 @@
 <?php
     use Form\AccountForm;
-
     load(['AccountForm'],FORMS);
     _forGuestPageOnly();
     
@@ -10,25 +9,9 @@
 
     if(isSubmitted()) {
         $post = request()->posts();
-        if(!empty($post['btn_register'])) {
-            $user = $serviceAccount->register($post);
-            
-            if(!$user) {
-                Flash::set(arr_to_str($serviceAccount->getErrors()),'danger');
-            } else {
-                /**
-                 * send verification email
-                 */
-                $userId = $serviceAccount->getRetVal('userid');
-                $isSent = $serviceAccount->sendAccountVerificationViaEmail($userId);
-
-                if($isSent) {
-                    Flash::set("Your registration is submitted successfully pls. go to your email and verified your account...", 'success');
-                } else {
-                    Flash::set("Something went wrong on registration, please report to administrator");
-                }
-                return redirect(_route('landing_login'));
-            }
+        if(!empty($post['btn_reset_password'])) {
+            $user = $serviceAccount->resetPassword($post['email']);
+            Flash::set("If your email exists, reset password will be sent to your email. You can close this page now");
         }
     }
 ?>
@@ -93,11 +76,20 @@
                                 </div>
                             </div>
                             <?php Flash::show()?>
-                            <?php
-                                grab('landing/landing_auth_partial/sign_up_form', [
-                                    'formAccount' => $formAccount
-                                ]);
-                            ?>
+                            <form action="" method="post">
+                                <div id="formSignIn">
+                                    <p class="mb-1 pb-0">Enter your email here to send reset password request</p>
+                                    <div class="form-floating mb-2">
+                                        <?php echo $formAccount->getCol('email')?>
+                                    </div>
+                                    <input type="submit" class="btn btn-info bg-col1 border-0 text-white w-100"
+                                        value="Submit" name="btn_reset_password">
+                                    <?php echo wDivider(30)?>
+                                    <div>
+                                        <?php echo wLinkDefault(_route('landing_login',''), 'Back to login.')?>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

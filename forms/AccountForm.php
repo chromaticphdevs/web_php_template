@@ -55,7 +55,10 @@ use Core\Form;
                 'options' => [
                     'label' => 'Password'
                 ],
-                'required' => true
+                'required' => true,
+                'attributes' => [
+                    'id' => 'password'
+                ]
             ]);
         }
         

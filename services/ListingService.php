@@ -65,8 +65,10 @@
         }
 
         public function getImages($moduleName) {
-            $scannedItems = scandir(PATH_PUBLIC.DS."uploads/images/{$moduleName}");
-            return filter_files_only($scannedItems);
+            if(file_exists(PATH_PUBLIC.DS."uploads/images/{$moduleName}")) {
+                $scannedItems = scandir(PATH_PUBLIC.DS."uploads/images/{$moduleName}");
+                return filter_files_only($scannedItems);
+            }
         }
 
         public function imageRequiredCheck($moduleName) {

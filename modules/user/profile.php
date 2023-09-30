@@ -5,11 +5,20 @@
     
     $formAccount = new AccountForm();
     $serviceAccount = new AccountService();
+    $purhcaseHistoryService = new PurchaseHistoryService();
 
     $whoIs = whoIs();
     $user = $serviceAccount->single([
         'where' => [
             'recno' => $whoIs['recno']
+        ]
+    ]);
+
+    $dateToday = nowMilitary();
+
+    $purhcaseHistories = $purhcaseHistoryService->getAll([
+        'where' => [
+            'usercode' => $whoIs['usercode']
         ]
     ]);
 
@@ -57,6 +66,9 @@
             return redirect(_route('user_profile'));
         }
     }
+
+    $folderName = 'PROFILE_PICTURES';
+    $userRecno = $user['recno'];
 ?>
 <?php build('content') ?>
     <div class="card">
@@ -132,6 +144,24 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-col1 text-white">
+                            <h4 class="card-title">Profile Picture</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <?php Flash::show('account_profile_message')?>
+                            <div style="text-align:center">
+                                <img src="<?php echo $user['profile']?>" alt="" style="width:150px;">
+                            </div>
+                            <?php echo wDivider(15)?>
+                            <form action="#">
+                                <input type="file" class="my-pond" name="filepond"/>
+                            </form>
+                        </div>
+                    </div>
+
+                    <?php echo wDivider(20)?>
+                    <div class="card">
+                        <div class="card-header bg-col1 text-white">
                             <h4 class="card-title">Change Password</h4>
                         </div>
 
@@ -161,11 +191,15 @@
                                     </label>
                                 </div>
                             <?php echo wDivider()?>
+
                             <div class="d-flex flex-row-reverse">
                                 <button name="btn_password" type="submit" value="btn_password"
                                     role="button"
                                     class="btn btn-info bg-col1 border-0 m-1 text-white">
-                                    <i class="me-2 fa fa-save"></i>Update</button>
+                                <i class="me-2 fa fa-save"></i>Update</button>
+
+                                <input type="checkbox" class="btn-check" id="C_showpass" autocomplete="">
+                                <label class="btn btn-info bg-col1 border-0 m-1 text-white" for="C_showpass"><i class="fa fa-eye"></i></label>
                             </div>
                             <?php echo $formAccount->end()?>
                         </div>
@@ -211,9 +245,56 @@
             </div>
         </div>
     </div>
+    <?php echo wDivider()?>
+    <div class="card">
+        <div class="card-header">
+            <h4 class="ccard-title">Stars History</h4>
+        </div>
+
+        <div class="card-body">
+            <?php if(empty($purhcaseHistories)) :?>
+                <p class="text-center">No star history found</p>
+            <?php else:?>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <th>Purchased Items</th>
+                        <th>Date Purchased</th>
+                        <th>Date End</th>
+                        <th>Days left</th>
+                    </thead>
+
+                    <tbody>
+                        <?php foreach($purhcaseHistories as $key => $row) :?>
+                            <?php
+                                $dateDifference = date_difference_in_days($dateToday, $row['effective_date_end']);    
+                            ?>
+                            <tr>
+                                <td><?php echo $row['memtype_or_star']?></td>
+                                <td><?php echo $row['effective_date_start']?></td>
+                                <td><?php echo $row['effective_date_end']?></td>
+                                <td><?php echo $dateDifference?></td>
+                            </tr>
+                        <?php endforeach?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif?>
+        </div>
+    </div>
+<?php endbuild()?>
+
+<?php build('headers')?>
+	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" />
+	<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
 <?php endbuild()?>
 
 <?php build('scripts') ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <script src="https://unpkg.com/jquery-filepond/filepond.jquery.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function(){
             var memberInfo = $('#memberinfo');
@@ -222,6 +303,41 @@
             $(memberInfo).change(function(){
                 let value = $(this).val();
                 toggleMemberLicense(value);
+            });
+
+            $("#C_showpass").on("click",function(){
+                let dis = $(this).is(":checked");
+                if(dis === true){
+                    $("#password").attr("type","text");
+                }else{
+                    $("#password").attr("type","password");
+                }
+            });
+
+            $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
+            $.fn.filepond.setDefaults({
+                server: {
+                    url : '<?php echo URL?>/',
+                    process : {
+                        url : 'api/profileupload.php?imageFolder=<?php echo $folderName?>&userRecno=<?php echo $userRecno?>',
+                        method : 'post',
+                        onload : function(response) {
+                            let responseData = JSON.parse(response);
+                            if(responseData) {
+                                if(responseData.status == 'success') {
+                                    location.reload();
+                                }
+                            }
+                        }
+                    }
+                },
+                allowMultiple : true
+            });
+            // Turn input element into a pond with configuration options
+            $('.my-pond').filepond();
+
+            $('.my-pond').on('FilePond:addfile', function(e){
+                // $("#btn_create_prop").hide();
             });
 
             function toggleMemberLicense(memberInfoValue) {

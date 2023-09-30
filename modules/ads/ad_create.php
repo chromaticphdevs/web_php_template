@@ -35,9 +35,7 @@ if(isSubmitted()) {
 		]));
 	} else {
 		Flash::set('Unable to add new Ads, '.arr_to_str($adService->getErrors()) , 'danger');
-		return request()->return();
 	}
-	return redirect(_route('ads_create'));
 }
 
 if(!empty($req['filter'])) {
@@ -59,87 +57,89 @@ if(!empty($req['filter'])) {
 	]
   ]);
 }
+
+$isSubmitted = isSubmitted();
 ?>
 <!-- Create Listing -->
 <div class="card">
 	<div class="card-body">
-		<div class="accordion accordion-flush" id="accordionFlush">
+	<div class="accordion" id="accordionExample">
 			<div class="accordion-item">
-				<h2 class="accordion-header" id="flush-headingOne">
-					<button class="accordion-button collapsed py-1" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-						<h5><i class="me-3 fa fa-clipboard-list"></i>Create Ads</h5>
+				<h2 class="accordion-header" id="headingTwo">
+					<button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
+						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isSubmitted ? 'true' : 'false'?>" aria-controls="collapseTwo">
+						<i class="me-3 fa fa-clipboard-list"></i>Create New Ads
 					</button>
 				</h2>
-
-				<div id="flush-collapseOne" class="accordion-collapse collapse?>" 
-				aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush">
-					<div class="accordion-body p-0">
+				<div id="collapseTwo" class="<?php echo $isSubmitted ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
 						<?php Flash::show()?>
 						<?php echo $formAd->start()?>
 							<?php echo $formAd->get('adscode')?>
-						<div class="row px-4">
-							<div class="col-sm-6">
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('listtypecode')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php 
-									  if(!empty($req['listingcode'])) {
-										echo $formAd->getCol('listingcode',[
-											'attributes' => [
-												'disabled' => true,
-												'class' => 'form-control'
-											]
-										]);
-										//re-write
-										echo $formAd->addAndCall([
-											'name' => 'listingcode',
-											'type' => 'hidden',
-											'value' => $req['listingcode']
-										]);
-									  } else {
-										echo $formAd->getCol('listingcode');
-									  }
-									?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('adstitle')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('adsdesc')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('word_tags')?>
-								</div>
-							</div>
-
-							<div class="col-sm-6">
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('price')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('securitydeposit')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('mincontract')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('downpayment')?>
-								</div>
-								<div class="form-floating mb-3">
-									<?php echo $formAd->getCol('paymentterm')?>
+							<div class="row px-4">
+								<div class="col-sm-6">
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('listtypecode')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php 
+											if(!empty($req['listingcode'])) {
+											echo $formAd->getCol('listingcode',[
+												'attributes' => [
+													'disabled' => true,
+													'class' => 'form-control'
+												]
+											]);
+											//re-write
+											echo $formAd->addAndCall([
+												'name' => 'listingcode',
+												'type' => 'hidden',
+												'value' => $req['listingcode']
+											]);
+											} else {
+											echo $formAd->getCol('listingcode');
+											}
+										?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('adstitle')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('adsdesc')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('word_tags')?>
+									</div>
 								</div>
 
-								<input type="submit" name="btn_create_prop"
-									class="mx-1 btn btn-info bg-col1 border-0 text-white"
-									value="Save Entry">
+								<div class="col-sm-6">
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('price')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('securitydeposit')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('mincontract')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('downpayment')?>
+									</div>
+									<div class="form-floating mb-3">
+										<?php echo $formAd->getCol('paymentterm')?>
+									</div>
+
+									<input type="submit" name="btn_create_prop"
+										class="mx-1 btn btn-info bg-col1 border-0 text-white"
+										value="Save Entry">
+								</div>
 							</div>
-						</div>
-						<?php echo $listingForm->end()?>
+						<?php echo $formAd->end()?>
 					</div>
 				</div>
 			</div>
 		</div>
+		
 	</div>
 </div>
 <!--- laoad ads -->

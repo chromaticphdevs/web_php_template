@@ -25,12 +25,15 @@
         ];
 
         const DEFAULT_MEMBER_TYPE = '1'; //blue 
-        const DEFAULT_MEMBER_STATUS = 'Verified';
+        const DEFAULT_MEMBER_STATUS = 'Unverified';
+        const MEMBER_STATUS_VERIFIED = 'Verified';
 
         const TYPE_BROKER = 'broker';
         const TYPE_AGENT = 'agent';
         const TYPE_OWNER = 'owner';
         const TYPE_REPRESENTATIVE = "representative";
+
+        const ACTION_VERIFY_ACCOUNT_VIA_EMAIL = 'VERIFY_ACCOUNT_VIA_EMAIL';
 
         public static function memberTypeInfos() {
             return [
@@ -83,6 +86,7 @@
             $userFilteredData['membertype'] = self::DEFAULT_MEMBER_TYPE;
             $userFilteredData['usercode'] = $this->_generateUserCode(substr($userFilteredData['memberfname'],0,1).substr($userFilteredData['memberlname'],0,1));
             $userFilteredData['memberstatus'] = self::DEFAULT_MEMBER_STATUS;
+
             $isOkay = parent::store($userFilteredData);
 
             if($isOkay) {
@@ -231,7 +235,7 @@
             if(strlen($prefix) < 2) {
                 echo die("Invalid Prefix");
             }
-            return strtoupper("{$prefix}".referenceSeries(1, 5, null));
+            return strtoupper("{$prefix}".referenceSeries(parent::count() + 1, 5, null));
         }
 
         private function _validateCharLength($str, $key, $requiredLength = 1) {
@@ -279,7 +283,7 @@
             $intentService = new IntentService();
 
             $intentID = $intentService->addRecord([
-                'category' => IntentService::REQUEST_CHANGE_EMAIL,
+                'category' => IntentService::REQUEST_EMAIL_CHANGE,
                 'intent_value' => json_encode([
                     'user_id' => $userId,
                     'email'   => $newEmail,
@@ -289,16 +293,17 @@
             ]);
 
             if($intentID) {
-                $approveChangeEmailRequestHREF = URL.DS.'intent_actions?action=email_request_approve&intent_id='.seal($intentID);
+                $approveChangeEmailRequestHREF = URL.DS._route('intent_actions',[
+                    'action' => IntentService::REQUEST_EMAIL_CHANGE,
+                    'intentID' => seal($intentID)
+                ]);
                 //send email
                 $subject = "New Email Re-verification from ".COMPANY_NAME;
                 $message = "Good day {$user['memberlname']} {$user['memberfname']} ,<br>";
                 $message .= "Pls follow the link below to complete your Email re-verification...<br>";
                 $message .= "<a href='{$approveChangeEmailRequestHREF}'>Verify My New Email Address!</a>";
 
-                _mail_base($subject, $message, [
-                    $newEmail
-                ]);
+                _mail_base($subject, $message,[$newEmail]);
                 return true;
             } else {
                 return false;
@@ -358,7 +363,73 @@
             return $errors;
         }
 
-        private function _createPassword($password) {
+        public function sendAccountVerificationViaEmail($userRecno) {
+            $user = parent::single([
+                'where' => [
+                    'recno' => $userRecno
+                ]
+            ]);
+
+            if(!$user) {
+                $this->addError("No user found");
+                return false;
+            }
+
+            $verifyHref = URL.DS._route('landing_actions', [
+                'action' => self::ACTION_VERIFY_ACCOUNT_VIA_EMAIL,
+                'userRecno' => seal($userRecno)
+            ]);
+
+            $subject = "Email verification from ".COMPANY_NAME;
+            $message = "Good day {$user['memberfname']} {$user['memberlname']},<br>";
+            $message .= "Pls follow the link below to complete your registration...<br>";
+            $message .= "<a href='{$verifyHref}'>Verify My Email Address!</a>";
+            _mail_base($subject, $message, [$user['email']]);
+
+            return true;
+        }
+
+        public function resetPassword($email) {
+            $user = parent::single([
+                'where' => [
+                    'email' => $email
+                ]
+            ]);
+
+            if($user) {
+                $newPassword = random_number(4);
+                //create intent
+                $intent = new IntentService();
+                $intentID = $intent->addRecord([
+                    'category' => IntentService::REQUEST_PASSWORD_CHANGE,
+                    'intent_value' => json_encode([
+                        'user_id' => $user['recno'],
+                        'newPassword' => $newPassword
+                    ]),
+                    'intent_status' => 'pending'
+                ]);
+
+                $href = URL.DS._route('intent_actions', [
+                    'intentID' => seal($intentID),
+                    'action'   => IntentService::REQUEST_PASSWORD_CHANGE,
+                    'userRecno' => seal($user['recno'])
+                ]);
+
+                //send reset password
+                $subject = "Reset Password Request";
+                $message = "Good day {$user['memberfname']} {$user['memberlname']},<br>";
+                $message .= "Pls follow the link below to reset your password...<br>";
+                $message .= "This is your temporary password : <b>{$newPassword}</b> please change after logging in<br>";
+                $message .= "<a href='{$href}'>Reset My Password!</a>";
+
+                _mail_base($subject, $message, [$user['email']]);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public function _createPassword($password) {
             return password_hash($password, PASSWORD_DEFAULT);
         }
     }

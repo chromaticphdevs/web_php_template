@@ -9,7 +9,7 @@
             <?php echo $formAccount->getCol('password')?>
         </div>
         <div class="d-flex justify-content-between mb-0">
-            <p class="small"><a href="#" class="formclick link-secondary" data="F" >Forgot Password?</a></p>
+            <p class="small"><a href="<?php echo _route('landing_forgot_password')?>" class="formclick link-secondary" data="F" >Forgot Password?</a></p>
         </div>
         <input type="submit" class="btn btn-info bg-col1 border-0 text-white w-100"
             value="Log In" name="btn_login">
@@ -21,6 +21,5 @@
             <p class="mb-1 pb-0">Not yet registered?</p>
             <?php echo wLinkDefault(_route('landing_register',''), 'Create an Account Here.')?>
         </div>
-        
     </div>
 </form>

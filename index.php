@@ -83,15 +83,21 @@
 			$module = substr($moduleString, 0, $modulePosition);
 			$view   = substr($moduleString, $modulePosition + 1);
 
-			if(!empty($settings['modules']['fileSettings']['alias'][$module])) {
-				$module = $settings['modules']['fileSettings']['alias'][$module];
-			}
+			$moduleBase = explode('/', $module);
+			$moduleBase = current($moduleBase);
 
-			if(!empty($settings['modules']['fileSettings']['prefix'][$module])) {
-				$prefix = $settings['modules']['fileSettings']['prefix'][$module];
+			if($moduleBase != 'public') {
+				if(!empty($settings['modules']['fileSettings']['alias'][$module])) {
+					$module = $settings['modules']['fileSettings']['alias'][$module];
+				}
+	
+				if(!empty($settings['modules']['fileSettings']['prefix'][$module])) {
+					$prefix = $settings['modules']['fileSettings']['prefix'][$module];
+				}
+				//check module if has alias
+				return require_once("modules/{$module}/{$prefix}{$view}.php");
 			}
-			//check module if has alias
-			return require_once("modules/{$module}/{$prefix}{$view}.php");
+			
 		}
 	}
 ?>

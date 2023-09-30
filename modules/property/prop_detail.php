@@ -81,11 +81,17 @@
                     <div class="d-flex justify-content-between">
                         <div class="align-self-center">
                             <div class="d-flex">
-                                <!-- <img src="data/img/defavatar.jpg" class="align-self-center rounded-circle" alt="" width="50" height="50"> -->
-                                <div class="d-flex justify-content-center bg-col2 rounded-circle text-white m-auto" style="width: 50px; height: 50px;">
-                                    <i class="align-self-center fa fa-2x fa-user-tie"></i>
-                                </div>
-                                
+                                <?php if(!empty($account['profile'])) :?>
+                                    <img src="<?php echo $account['profile']?>" 
+                                        class="align-self-center rounded-circle"
+                                        alt="" width="50" height="50">
+                                <?php else:?>
+                                    <div class="d-flex justify-content-center bg-col2 rounded-circle text-white m-auto" 
+                                    style="width: 50px; height: 50px;">
+                                        <i class="align-self-center fa fa-2x fa-user-tie"></i>
+                                    </div>
+                                <?php endif?>
+
                                 <div class="align-self-center p-2 flex-grow-1">
                                     <span class="fs-5">Posted by <?php echo ucwords("{$account['memberfname']} {$account['memberlname']}");?></span><br>
                                     <small class="text-muted lh-1"><?php echo time_since($adDetail['dateinserted']);?></small>

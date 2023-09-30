@@ -73,6 +73,12 @@
       return date('Y-m-d');
     }
     
+    function date_difference_in_days($date1, $date2) {
+        $start = strtotime($date1);
+        $end = strtotime($date2);
+        return ceil(($end - $start) / 86400);
+    }
+
     function date_difference($date1 , $date2)
     {
         $date1 = date_create($date1);
