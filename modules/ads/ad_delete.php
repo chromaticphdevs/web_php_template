@@ -17,14 +17,17 @@
         'where' => [
             'listingkeys' => $addInfo['listingcode']
         ]
-       ]);
-
-
+    ]);
+    
     if($addInfo['star_id']) {
         Flash::set("Unable to delete ads with stars, please remove star from ads then delete again.", 'danger');
-        return redirect(_route('prop_show', [
-            'recno' => seal($listing['recno'])
-        ]));
+        if(!empty($req['returnTo'])) {
+            return redirect(unseal($req['returnTo']));
+        } else {
+            return redirect(_route('prop_show', [
+                'recno' => seal($listing['recno'])
+            ]));
+        }
     }
 
    $adService->delete([
@@ -34,7 +37,11 @@
 
    Flash::set("Ad has been removed");
 
-   return redirect(_route('prop_show', [
-    'recno' => seal($listing['recno'])
-   ]));
+   if(!empty($req['returnTo'])) {
+    return redirect(unseal($req['returnTo']));
+   } else {
+    return redirect(_route('prop_show', [
+        'recno' => seal($listing['recno'])
+    ]));
+   }
 ?>

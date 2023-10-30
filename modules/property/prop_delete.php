@@ -22,6 +22,11 @@
         ]
     ]);
 
+    if(!empty($ads)){
+        Flash::set("Properties with ads are not allowed to be removed, delete the ads first then remove this property", 'warning');
+        return request()->return();
+    }
+
     $listingForm = new ListingForm();
     $adsForm = new AdsForm();
     $listingForm->setValueObject($listing);

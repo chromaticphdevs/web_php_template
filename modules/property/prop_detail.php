@@ -12,12 +12,15 @@
     $adsForm = new AdsForm();
     $isInquiryFormSubmitted = false;
     $adService = new AdService();
+
+    $isSubmitted = false;
     
     if(isSubmitted()) {
         $isInquiryFormSubmitted = true;
         $post = request()->posts();
         //append the following to the post
         $response = $clientService->saveNewInquiry($post);
+        $isSubmitted = true;
     }
     $adId = unseal($req['adId']);
 
@@ -74,6 +77,7 @@
 <div class="offsettop"></div>
 <div class="maxw1080 m-auto"></div>
 <div class="container-fluid">
+    <?php Flash::show()?>
     <div class="row">
         <div class="col-md-9">
             <div class="card mb-4" style="display:block">
@@ -149,9 +153,18 @@
                         <?php
                             if(whoIs())  {
                                 echo '<div>';
-                                echo wButton(_route('prop_show', [
-                                    'recno' => seal($adDetail['listing_recno'])
-                                ]), 'Overview', 'primary');
+                                    echo wButton(_route('prop_show', [
+                                        'recno' => seal($adDetail['listing_recno'])
+                                    ]), 'Property Detail', 'primary');
+
+                                    echo wButton(_route('ads_delete', [
+                                        'recno' => seal($adDetail['recno']),
+                                        'returnTo' => seal(_route('prop_detail', [
+                                            'adId' => seal($adDetail['recno'])
+                                        ]))
+                                    ]), 'Delete Ads', 'danger', [
+                                        'icon' => 'fa fa-trash'
+                                    ]);
                                 echo '</div>';
                             }
                         ?>
@@ -163,7 +176,7 @@
                                         <div class='carousel-item <?php echo $key == 0 ? 'active' : ''?>'>
                                             <img src='public/uploads/images/<?php echo "{$imageFolder}/{$file}"?>' 
                                                 class='d-block w-100' alt='$adstitle'
-                                                style="width: 150px;">
+                                                style="width: 150px; height:600px">
                                         </div>
                                     <?php endforeach?>
                                 </div>
@@ -176,19 +189,30 @@
                                     <span class="visually-hidden">Next</span>
                                 </a>
                             </div>
+
+                            <div>
+                                <?php foreach($fileImages as $key => $file) :?>
+                                    <img src='public/uploads/images/<?php echo "{$imageFolder}/{$file}"?>' 
+                                                class='img-thumbnail' alt='$adstitle'
+                                                style="width: 150px;">
+                                <?php endforeach?>
+                            </div>
                             
                             <?php if(!whoIs()) :?>
                             <div class="card mt-2">
                                 <div class="card-body p-2">
-                                    <div class="accordion accordion-flush" id="accordionFlush">
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="flush-headingOne">
-                                                <button class="accordion-button collapsed py-1 pt-2" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                                    <h5><i class="me-3 fa fa-phone"></i>Contact Agent</h5>
-                                                </button>
-                                            </h2>
-                                            <div id="flush-collapseOne" class="accordion-collapse collapse hide" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush">
-                                                
+
+                                <div class="accordion" id="accordionExample">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingTwo">
+                                            <button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
+                                                data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isSubmitted ? 'true' : 'false'?>" aria-controls="collapseTwo">
+                                                <h5><i class="me-3 fa fa-phone"></i>Contact Agent</h5>
+                                            </button>
+                                        </h2>
+                                        <div id="collapseTwo" class="<?php echo $isSubmitted ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+                                                <?php Flash::show('inquiry-message')?>
                                                 <?php if(!$isInquiryFormSubmitted) :?>
                                                     <div class="accordion-body p-0">
                                                         <?php
@@ -240,6 +264,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
                                 </div>
                             </div>
                             <?php endif?>

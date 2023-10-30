@@ -63,7 +63,7 @@ $isSubmitted = isSubmitted();
 <!-- Create Listing -->
 <div class="card">
 	<div class="card-body">
-	<div class="accordion" id="accordionExample">
+		<div class="accordion" id="accordionExample">
 			<div class="accordion-item">
 				<h2 class="accordion-header" id="headingTwo">
 					<button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
@@ -139,7 +139,6 @@ $isSubmitted = isSubmitted();
 				</div>
 			</div>
 		</div>
-		
 	</div>
 </div>
 <!--- laoad ads -->
@@ -199,8 +198,9 @@ $isSubmitted = isSubmitted();
 					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
 					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
 						<div class='p-4' style='border:""'>
-						<p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
-						<small class='text-truncate'><?php echo $row['listtypecode']?></small>
+							<?php html_ads_star_link($row['star_id'], $row['status'], '', seal($row['recno']));?>
+							<p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
+							<small class='text-truncate'><?php echo $row['listtypecode']?></small>
 						</p>
 						<div class='mt-0'>
 							<?php 
@@ -226,5 +226,9 @@ $isSubmitted = isSubmitted();
 		</div>
 	</div>
 </div>
+<?php endbuild()?>
+
+<?php build('scripts')?>
+	<script src="<?php echo _path_public('js/ads.js')?>"></script>
 <?php endbuild()?>
 <?php loadTo()?>

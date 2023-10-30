@@ -39,7 +39,6 @@
         case 'toggle_star':
             //check for user
             $accountService = new AccountService();
-            $accountService = new AccountService();
 
             $ads = $adService->single([
                 'where' => [

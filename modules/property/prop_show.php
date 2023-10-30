@@ -142,13 +142,7 @@
                         <img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
                         <div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
                             <div class='p-4' style='border:""'>
-                                    <?php html_ads_star_link($row['star_id'], $row['status'], _route('ads_actions', [
-                                        'action' => 'toggle_star',
-                                        'recno' => seal($row['recno']),
-                                        'returnTo' => seal(_route('prop_show', [
-                                            'recno' => seal($recno)
-                                        ]))
-                                    ]));?>
+                                    <?php html_ads_star_link($row['star_id'], $row['status'], '', seal($row['recno']));?>
                                     <p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
                                     <small class='text-truncate'><?php echo $row['listtypecode']?></small>
                                     </p>
@@ -166,10 +160,6 @@
                                                 'action' => 'toggle_ad',
                                                 'recno'  => seal($row['recno'])
                                             ]), '', ['icon' => 'fa fa-toggle-'.$toggler, 'class' => "btn btn-sm {$togglerClass} rounded-circle"]);
-
-                                            echo wLinkDefault(_route('ads_delete', [
-                                                'recno' => seal($row['recno']),
-                                            ]), '', ['icon' => 'fa fa-trash', 'class' => 'btn btn-sm btn-outline-light rounded-circle form-verify-action']);
                                         ?>
                                     </div>
                             </div>
@@ -183,4 +173,9 @@
 	</div>
 </div>
 <?php endbuild()?>
+
+<?php build('scripts')?>
+	<script src="<?php echo _path_public('js/ads.js')?>"></script>
+<?php endbuild()?>
+
 <?php loadTo()?>

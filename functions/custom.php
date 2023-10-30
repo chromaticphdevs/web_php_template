@@ -22,7 +22,7 @@ function _forAuthPageOnly($href = '', $userType = []) {
 }
 
 
-function html_ads_star_link($star, $status, $href = 'javascript:void(0)') {
+function html_ads_star_link($star, $status, $href = 'javascript:void(0)', $moduleID = '') {
     $btnType = '';
     $txtColor = '';
 
@@ -35,11 +35,13 @@ function html_ads_star_link($star, $status, $href = 'javascript:void(0)') {
     } else {
         $btnType = 'btn-outline-secondary';
     }
-    echo wLinkDefault($href, '',[
+    echo wLinkDefault('javascript:void(0)', '',[
         'type' => 'button',
-        'class' => "btn btn-sm {$btnType} rounded-circle mb-3",
+        'class' => "btn btn-sm {$btnType} rounded-circle mb-3 ad-start-action",
         'data-bs-toggle' => 'tooltup',
         'data-bs-placement' => 'top',
+        'data-action' => 'toggle_star',
+        'data-moduleid' => $moduleID,
         'title' => '',
         'data-bs-original-title' => 'Assign stars to this ads',
         'icon' => 'fa fa-star',
