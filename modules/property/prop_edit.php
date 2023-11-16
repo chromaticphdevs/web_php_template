@@ -50,14 +50,6 @@ $listingForm = new ListingForm();
 	</div>
 	<div class="card-body">
 	    <?php Flash::show()?>
-
-		<?php 
-			echo wLinkDefault(_route('prop_show', [
-				'recno' => seal($propId)
-			]), 'Cancel Edit', ['class' => 'btn btn-primary btn-sm']);
-
-			echo wDivider();
-		?>
 		<?php echo $listingForm->start()?>
 		<?php echo $listingForm->get('usercode')?>
 		<?php echo $listingForm->get('listingkeys')?>
@@ -90,6 +82,14 @@ $listingForm = new ListingForm();
 				<input type="submit" name="btn_create_prop"
 					class="mx-1 btn btn-info bg-col1 border-0 text-white"
 					value="Save Changes">
+
+				<?php 
+					echo wLinkDefault(_route('prop_show', [
+						'recno' => seal($propId)
+					]), 'Cancel Edit', ['class' => 'btn btn-primary']);
+
+					echo wDivider();
+				?>
 			</div>
 
 			<div class="col-md-6">
@@ -102,10 +102,12 @@ $listingForm = new ListingForm();
 				<?php foreach($fileImages as $key => $row) :?>
 					<div style="display:inline-block;border:1px solid #eee; padding:12px">
 						<img src="public/uploads/images/<?php echo "{$imageFolder}/{$row}"?>"
-						style="width:200px">
-						<div class="text-center"><?php echo wLinkDefault(_route('resource_delete', null, [
-							'path' => seal("public/uploads/images/{$imageFolder}/{$row}")
-						]), 'Remove Image')?></div>
+						style="width:200px;height:100px">
+						<?php if(count($fileImages) > 1) :?>
+							<div class="text-center"><?php echo wLinkDefault(_route('resource_delete', null, [
+								'path' => seal("public/uploads/images/{$imageFolder}/{$row}")
+							]), 'Remove Image')?></div>
+						<?php endif?>
 					</div>
 				<?php endforeach?>
 			</div>
@@ -130,9 +132,9 @@ $listingForm = new ListingForm();
             $.fn.filepond.registerPlugin(FilePondPluginImagePreview);
             $.fn.filepond.setDefaults({
                 server: {
-                    url : 'http://localhost/website_archi/api/',
+                    url : '<?php echo URL?>/',
                     process : {
-						url : 'filepondupload.php?imageFolder=<?php echo $imageFolder?>',
+						url : 'api/filepondupload.php?imageFolder=<?php echo $imageFolder?>',
                         method : 'post',
                         onload : function(response) {
 							console.log([

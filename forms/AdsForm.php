@@ -40,7 +40,7 @@
                 'class' => 'form-control',
                 'required' => true,
                 'options' => [
-                    'label' => 'Listing Type Code',
+                    'label' => 'Listing Type',
                     'option_values' => $listingTypesArray
                 ]
             ]);

@@ -46,7 +46,7 @@
 
 			return <<<EOF
 				<select name = "{$name}" {$attributes}>
-					<option value=''>--Select</option>
+					<option value=''>-Select</option>
 					{$options}
 				</select>
 			EOF;

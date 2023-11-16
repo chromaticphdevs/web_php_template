@@ -37,11 +37,7 @@
 
    Flash::set("Ad has been removed");
 
-   if(!empty($req['returnTo'])) {
-    return redirect(unseal($req['returnTo']));
-   } else {
-    return redirect(_route('prop_show', [
+   return redirect(_route('prop_show', [
         'recno' => seal($listing['recno'])
     ]));
-   }
 ?>

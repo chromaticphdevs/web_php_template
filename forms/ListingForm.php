@@ -42,7 +42,7 @@
 				'type' => 'select',
 				'name' => 'proptypecode',
 				'options' => [
-					'label' => 'Property Type Code',
+					'label' => 'Property Type',
 					'option_values' => $propertTypeArray
 				],
 				'attributes' => [
@@ -110,7 +110,7 @@
 				'type' => 'select',
 				'name' => 'propclasscode',
 				'options' => [
-					'label' => 'Property Class Code',
+					'label' => 'Property Class',
 					'option_values' => $propertyClassArray
 				],
 				'attributes' => [
@@ -129,7 +129,7 @@
 				'type' => 'select',
 				'name' => 'loccitycode',
 				'options' => [
-					'label' => 'Property Location Code',
+					'label' => 'Property Location',
 					'option_values' => $cityLocationArray
 				],
 				'class' => 'form-control',

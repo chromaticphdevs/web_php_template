@@ -99,4 +99,19 @@
 			);
 			return $this->databaseInstance->resultSet();
 		}
+
+		public function getAllCount($tableName, $condition, $order, $limit) {
+			$result = $this->databaseInstance->query(
+				"SELECT count(*) as total_count 
+					FROM {$tableName}
+					{$condition} {$order} {$limit}"
+			);
+
+			echo "SELECT count(*) as total_count 
+			FROM {$tableName}
+			{$condition} {$order} {$limit}";
+			die();
+
+			return $this->databaseInstance->single()['total_count'] ?? 0;
+		}
 	}	

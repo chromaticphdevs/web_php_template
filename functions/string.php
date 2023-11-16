@@ -127,11 +127,7 @@
             } 
             if (substr($str, strlen($str), strlen($prefix)) == $prefix) {
                 $str = substr($str, strlen($prefix));
-
-                
             } 
-
-            
         } else {
             if (substr($str, $position, strlen($prefix)) == $prefix) {
                 $str = substr($str, strlen($prefix));

@@ -12,6 +12,7 @@
     $adsForm = new AdsForm();
     $isInquiryFormSubmitted = false;
     $adService = new AdService();
+    $paidAdService = new PaidAdService();
 
     $isSubmitted = false;
     
@@ -27,6 +28,37 @@
     $adDetail = $adService->single([
         'where' => [
             'ads.recno' => $adId
+        ]
+    ]);
+
+    $relatedAdsByListing = $adService->getAll([
+        'where' => [
+            'ads.status' => 'on',
+            'listing.loccitycode' => $adDetail['loccitycode'],
+            'ads.recno' => [
+                'condition' => 'not equal',
+                'value' => $adId
+            ]
+        ]
+    ]);
+
+    $relatedAdsByLoc = $adService->getAll([
+        'where' => [
+            'ads.status' => 'on',
+            'ads.recno' => [
+                'condition' => 'not equal',
+                'value' => $adId
+            ]
+        ]
+    ]);
+
+    $relatedAdsByPriority = $paidAdService->getAds(PaidAdService::ADS_PRIORITY, [
+        'where' => [
+            'listing.loccitycode' => $adDetail['loccitycode'],
+            'ads.recno' => [
+                'condition' => 'not equal',
+                'value' => $adId
+            ]
         ]
     ]);
 
@@ -163,40 +195,29 @@
                                             'adId' => seal($adDetail['recno'])
                                         ]))
                                     ]), 'Delete Ads', 'danger', [
-                                        'icon' => 'fa fa-trash'
+                                        'icon' => 'fa fa-trash',
+                                        'id' => 'deleteBtn'
                                     ]);
                                 echo '</div>';
                             }
                         ?>
                     </div>
                     <div class="col-sm-6">
-                            <div id="carouselWithIndicators" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-inner">
+                            <section>
+                                <!-- images section -->
+                                <div class='<?php echo $key == 0 ? 'active' : ''?>'>
+                                    <img src='public/uploads/images/<?php echo "{$imageFolder}/{$fileImages[0]}"?>' 
+                                        class='d-block w-100' alt='$adstitle'
+                                        style="width: 400px; height:350px" id="mainImage">
+                                </div>
+                                <div>
                                     <?php foreach($fileImages as $key => $file) :?>
-                                        <div class='carousel-item <?php echo $key == 0 ? 'active' : ''?>'>
-                                            <img src='public/uploads/images/<?php echo "{$imageFolder}/{$file}"?>' 
-                                                class='d-block w-100' alt='$adstitle'
-                                                style="width: 150px; height:600px">
-                                        </div>
+                                        <img src='public/uploads/images/<?php echo "{$imageFolder}/{$file}"?>' 
+                                                    class='img-thumbnail' alt='$adstitle'
+                                                    style="width: 23%; height:100px; margin:mx-auto; display:inline">
                                     <?php endforeach?>
                                 </div>
-                                <a class="carousel-control-prev" href="#carouselWithIndicators" role="button" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselWithIndicators" role="button" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </a>
-                            </div>
-
-                            <div>
-                                <?php foreach($fileImages as $key => $file) :?>
-                                    <img src='public/uploads/images/<?php echo "{$imageFolder}/{$file}"?>' 
-                                                class='img-thumbnail' alt='$adstitle'
-                                                style="width: 150px;">
-                                <?php endforeach?>
-                            </div>
+                            </section>
                             
                             <?php if(!whoIs()) :?>
                             <div class="card mt-2">
@@ -277,6 +298,137 @@
                         type="button" class="btn btn-info bg-col1 border-0 text-white">Look for more</button>
                     </div>
                 <?php endif?>
+
+                <!-- RELATED ADS FROM SAME UNIT -->
+                <?php if(!empty($relatedAdsByListing)) :?>
+                    <main class="mt-5">
+                        <div class="maxw1080 m-auto px-sm-5">
+                            <!-- Catalogue -->
+                            <div class="card" style="overflow: hidden;">
+                                <div id="load_here" class="card-body p-4">
+                                <h5 class='card-title'>Related</h5>
+                                    <?php foreach($relatedAdsByListing as $key => $listing) :?>
+                                        <?php
+                                            if(!empty($priorityAdsIds)) {
+                                                if(in_array($listing['recno'], $priorityAdsIds)) {
+                                                    continue;
+                                                }
+                                            }
+                                            $imageFolder = $listing['module_folder_name']; 
+                                            if(!empty($imageFolder)) {
+                                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                                            } else {
+                                                $listingImages = [];
+                                            }
+                                        ?>
+                                        <div data-href = '<?php echo _route('prop_detail', null, [
+                                            'adId' => seal($listing['recno'])
+                                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                                <div class='text-end text-truncate my-0 py-0'>
+                                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                                    <?php echo $listing['loccitytag']?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach?>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                <?php endif?>
+
+                <?php if(!empty($relatedAdsByLoc)) :?>
+                    <main class="mt-5">
+                        <div class="maxw1080 m-auto px-sm-5">
+                            <!-- Catalogue -->
+                            <div class="card" style="overflow: hidden;">
+                                <div id="load_here" class="card-body p-4">
+                                <h5 class='card-title'>Near you</h5>
+                                    <?php foreach($relatedAdsByLoc as $key => $listing) :?>
+                                        <?php
+                                            if(!empty($priorityAdsIds)) {
+                                                if(in_array($listing['recno'], $priorityAdsIds)) {
+                                                    continue;
+                                                }
+                                            }
+                                            $imageFolder = $listing['module_folder_name']; 
+                                            if(!empty($imageFolder)) {
+                                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                                            } else {
+                                                $listingImages = [];
+                                            }
+                                        ?>
+                                        <div data-href = '<?php echo _route('prop_detail', null, [
+                                            'adId' => seal($listing['recno'])
+                                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                                <div class='text-end text-truncate my-0 py-0'>
+                                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                                    <?php echo $listing['loccitytag']?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach?>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                <?php endif?>
+
+                <?php if(!empty($relatedAdsByPriority)) :?>
+                    <main class="mt-5">
+                        <div class="maxw1080 m-auto px-sm-5">
+                            <!-- Catalogue -->
+                            <div class="card" style="overflow: hidden;">
+                                <div id="load_here" class="card-body p-4">
+                                <h5 class='card-title'>Featured</h5>
+                                    <?php foreach($relatedAdsByPriority as $key => $listing) :?>
+                                        <?php
+                                            if(!empty($priorityAdsIds)) {
+                                                if(in_array($listing['recno'], $priorityAdsIds)) {
+                                                    continue;
+                                                }
+                                            }
+                                            $imageFolder = $listing['module_folder_name']; 
+                                            if(!empty($imageFolder)) {
+                                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                                            } else {
+                                                $listingImages = [];
+                                            }
+                                        ?>
+                                        <div data-href = '<?php echo _route('prop_detail', null, [
+                                            'adId' => seal($listing['recno'])
+                                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                                <div class='text-end text-truncate my-0 py-0'>
+                                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                                    <?php echo $listing['loccitytag']?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach?>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                <?php endif?>
+
                 <br><br>
             </div>
         </div>
@@ -285,5 +437,26 @@
 </div>
 <?php endbuild()?>
 
+
+<?php build('scripts') ?>
+<script>
+    $(function(){
+        $('.img-thumbnail').click(function(e){
+            $("#mainImage").attr('src', $(this).attr('src'));
+        });
+
+        $('div.property').on('click', function(){
+            let href = $(this).data('href');
+            window.location.href = href;
+        });
+
+        $('#deleteBtn').click(function(e){
+            if(!confirm("Are you sure you want to delete this ad?")) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+<?php endbuild()?>
 
 <?php loadTo('_tmp/layout_landing')?>

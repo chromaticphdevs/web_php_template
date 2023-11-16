@@ -408,7 +408,7 @@
 			return true;
 		}
 
-		private function getItem($name) {
+		public function getItem($name) {
 			return $this->_items[$name];
 		}
 

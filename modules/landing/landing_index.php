@@ -1,15 +1,23 @@
 
 <?php build('content') ?> 
 <?php
-	use Form\ListingForm;
-	load(['ListingForm'], FORMS);
+
+    use Form\AdsForm;
+    use Form\ListingForm;
+	load(['ListingForm', 'AdsForm'], FORMS);
     load(['Form'], HELPERS);
 	global $_formCommon;
 
+    $limit = 5;
+    $curPage = $_GET['page'] ?? 1;
+    $offset = ($curPage - 1) * $limit;
+    $resultCount = 0;
+
     $req = request()->inputs();
     $adService = new AdService();
-
+    $paidAdService = new PaidAdService();
 	$listingForm = new ListingForm();
+    $adsForm = new AdsForm();
     $listingService = new ListingService();
 
 	$_formCommon->setOptionValues('sort',[
@@ -20,16 +28,15 @@
 
     if(!empty($req['filter'])) {
         $filter = array_filter([
-            'listing.listingtag' => $req['listingtag'],
+            'ads.listtypecode' => $req['listtypecode'],
             'listing.proptypecode' => $req['proptypecode'],
             'listing.propclasscode' => $req['propclasscode'],
             'listing.loccitycode' => $req['loccitycode']
         ]);
         
         $condition = [];
-
         if(!empty($filter)) {
-            $condition['GROUP_CONDITION'] = $listingService->conditionConvert($filter);
+            $condition['GROUP_CONDITION'] = $filter;
         }
 
         if(!empty($req['search_key'])) {
@@ -54,16 +61,32 @@
             $condition = array_merge($condition, $keySearch);
         }
 
+        // dump($condition);
         $listings = $adService->getAll([
+            'where' => $condition,
+            'limit' => "{$offset}, {$limit}"
+        ]);
+
+        $totalListing = $adService->getAllCount([
             'where' => $condition
         ]);
     } else {
         $listings = $adService->getAll([
             'where' => [
                 'ads.status' => 'on'
+            ],
+            'limit' => "{$offset}, {$limit}"
+        ]);
+
+        $totalListing = $adService->getAllCount([
+            'where' => [
+                'ads.status' => 'on'
             ]
         ]);
     }
+    $goldAds = $paidAdService->getAds(PaidAdService::ADS_GOLD);
+    $silverAds = $paidAdService->getAds(PaidAdService::ADS_SILVER);
+    $priorityAds = $paidAdService->getAds(PaidAdService::ADS_PRIORITY);
 ?>
 <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-white shadow">
     <div class="container-fluid">
@@ -85,7 +108,7 @@
             <div class="navbar-nav">
                     <div class="nav-link px-1">
                         <div class="form-floating">
-                            <?php echo $listingForm->getCol('listingtag', [
+                            <?php echo $adsForm->getCol('listtypecode', [
                                 'required' => false
                             ]);?>
                         </div>
@@ -145,43 +168,99 @@
             <div id="load_here" class="card-body p-4">
                 <div>
                     <?php
+                        $bredCrumbs = [];
                         if(!empty($filter)) {
-                            echo implode(', ', array_values($filter));
+                            if(!empty($req['listtypecode'])) {
+                                $bredCrumbs[] = $adsForm->getItem('listtypecode')['option_values'][$req['listtypecode']];
+                            }
+
+                            if(!empty($req['proptypecode'])) {
+                                $bredCrumbs[] = $listingForm->getItem('proptypecode')['option_values'][$req['proptypecode']];
+                            }
+
+                            if(!empty($req['propclasscode'])) {
+                                $bredCrumbs[] = $listingForm->getItem('propclasscode')['option_values'][$req['propclasscode']];
+                            }
+
+                            if(!empty($req['loccitycode'])) {
+                                $bredCrumbs[] = $listingForm->getItem('loccitycode')['option_values'][$req['loccitycode']];
+                            }
+
+                            echo ucwords(implode(',', $bredCrumbs)) ;
                             echo wDivider(5);
                             echo wLinkDefault(_route('landing_index'), 'Clear Filter');
                         }
                     ?>
                 </div>
                 <?php if(empty($listings)) :?>
-                    <p class="mt-5 text-center">There are no listings found</p>
+                    <p class="mt-5 text-center">There are no listings found.</p>
                 <?php else:?>
-                <?php foreach($listings as $key => $listing) :?>
-                    <?php
-                        $imageFolder = $listing['module_folder_name']; 
-                        if(!empty($imageFolder)) {
-                            $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
-                        } else {
-                            $listingImages = [];
-                        }
-                    ?>
-                    <div data-href = '<?php echo _route('prop_detail', null, [
-                        'adId' => seal($listing['recno'])
-                    ])?>' class='card max300W dispoint property' style="display: inline-block;">
-                        <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
-                        <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
-                            bg-dark bg-opacity-50 rounded-bottom p-2'>
-                            <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
-                            <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
-                            <div class='text-end text-truncate my-0 py-0'>
-                                <i class='fa fa-map-marker-alt me-2'></i>
-                                <?php echo $listing['loccitytag']?>
+                    <!-- FIRST 5 ITEMS-->
+                    <?php $priorityAdsIds = []?>
+                    <?php if($priorityAds) :?>
+                        <?php foreach($priorityAds  as $key => $prio) :?>
+                            <?php
+                                $priorityAdsIds[] = $prio['recno'];
+                                $imageFolder = $prio['module_folder_name']; 
+                                if(!empty($imageFolder)) {
+                                    $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                                } else {
+                                    $listingImages = [];
+                                }
+                            ?>
+                            <div data-href = '<?php echo _route('prop_detail', null, [
+                                'adId' => seal($prio['recno'])
+                            ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                                <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                                <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                    bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                    <div class='text-end'><?php echo $prio['listtypecode']?></div>
+                                    <div class='text-end'><?php echo $prio['proptypecode']?> <?php echo $prio['propclasstag']?></div>
+                                    <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($prio['price'])?></div>
+                                    <div class='text-end text-truncate my-0 py-0'>
+                                        <i class='fa fa-map-marker-alt me-2'></i>
+                                        <?php echo $prio['loccitytag']?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach?>
+                    <?php endif?>
+                    <?php foreach($listings as $key => $listing) :?>
+                        <?php
+                            if(!empty($priorityAdsIds)) {
+                                if(in_array($listing['recno'], $priorityAdsIds)) {
+                                    continue;
+                                }
+                            }
+                            $imageFolder = $listing['module_folder_name']; 
+                            if(!empty($imageFolder)) {
+                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                            } else {
+                                $listingImages = [];
+                            }
+                        ?>
+                        <div data-href = '<?php echo _route('prop_detail', null, [
+                            'adId' => seal($listing['recno'])
+                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                <div class='text-end text-truncate my-0 py-0'>
+                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                    <?php echo $listing['loccitytag']?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endforeach?>
+                    <?php endforeach?>
                 <?php endif?>
             </div>
+            <?php echo wDivider(30)?>
+            <?php echo wPaginator($totalListing, $limit, $_GET['page'] ?? 1, 'landing_index', $req,'')?>
         </div>
+
     </div>
 </main>
 
@@ -196,28 +275,92 @@
 </main>
 
 <!-- Featured Items -->
+<?php if($goldAds) :?>
 <main class="mt-4">
-    <div id="loadfeaturedunitA" class="maxw1080 m-auto px-sm-5">
-        
+    <div class="maxw1080 m-auto px-sm-5">
+        <div class='card mb-4'>
+            <div  class='card-body'>
+                <h5 class='card-title'>Featured Ads</h5>
+                <div  class='d-flex' style='overflow: hidden; overflow-x: auto;'>
+                    <?php foreach($goldAds as $key => $listing) :?>
+                        <?php
+                            $imageFolder = $listing['module_folder_name']; 
+                            if(!empty($imageFolder)) {
+                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                            } else {
+                                $listingImages = [];
+                            }
+                        ?>
+                        <div data-href = '<?php echo _route('prop_detail', null, [
+                            'adId' => seal($listing['recno'])
+                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                <div class='text-end text-truncate my-0 py-0'>
+                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                    <?php echo $listing['loccitytag']?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach?>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+<?php endif?>
+
 
 <!-- Featured Items -->
+<?php if($silverAds) :?>
 <main class="mt-4">
-    <div id="loadfeaturedunitB" class="maxw1080 m-auto px-sm-5">
-        
+    <div class="maxw1080 m-auto px-sm-5">
+        <div class='card mb-4'>
+            <div  class='card-body'>
+                <h5 class='card-title'>Featured Ads</h5>
+                <div  class='d-flex' style='overflow: hidden; overflow-x: auto;'>
+                    <?php foreach($silverAds as $key => $listing) :?>
+                        <?php
+                            $imageFolder = $listing['module_folder_name']; 
+                            if(!empty($imageFolder)) {
+                                $listingImages = filter_files_only(scandir("public/uploads/images/{$imageFolder}"));
+                            } else {
+                                $listingImages = [];
+                            }
+                        ?>
+                        <div data-href = '<?php echo _route('prop_detail', null, [
+                            'adId' => seal($listing['recno'])
+                        ])?>' class='card max300W dispoint property' style="display: inline-block;">
+                            <img src='public/uploads/images/<?php echo $imageFolder?>/<?php echo $listingImages[0] ?? ''?>' class='card-img-top rounded imgbox2'>
+                            <div class='position-absolute bottom-0 start-50 translate-middle-x text-white w-100 
+                                bg-dark bg-opacity-50 rounded-bottom p-2'>
+                                <div class='text-end'><?php echo $listing['listtypecode']?></div>
+                                <div class='text-end'><?php echo $listing['proptypecode']?> <?php echo $listing['propclasstag']?></div>
+                                <div class='text-end h4 m-0 p-0 text-truncate fontprice'><?php echo amountHTML($listing['price'])?></div>
+                                <div class='text-end text-truncate my-0 py-0'>
+                                    <i class='fa fa-map-marker-alt me-2'></i>
+                                    <?php echo $listing['loccitytag']?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach?>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+<?php endif?>
 <?php endbuild()?>
 
 <?php build('scripts') ?>
     <script>
         $(function(){
-
             $('div.property').on('click', function(){
                 let href = $(this).data('href');
-
-                console.log(href);
                 window.location.href = href;
             });
         });

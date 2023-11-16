@@ -59,6 +59,7 @@ if(!empty($req['filter'])) {
 }
 
 $isSubmitted = isSubmitted();
+$isShowAccordition = !empty($_GET['create_ad']) || $isSubmitted;
 ?>
 <!-- Create Listing -->
 <div class="card">
@@ -66,12 +67,12 @@ $isSubmitted = isSubmitted();
 		<div class="accordion" id="accordionExample">
 			<div class="accordion-item">
 				<h2 class="accordion-header" id="headingTwo">
-					<button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
-						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isSubmitted ? 'true' : 'false'?>" aria-controls="collapseTwo">
+					<button class="<?php echo $isShowAccordition ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
+						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isShowAccordition ? 'true' : 'false'?>" aria-controls="collapseTwo">
 						<i class="me-3 fa fa-clipboard-list"></i>Create New Ads
 					</button>
 				</h2>
-				<div id="collapseTwo" class="<?php echo $isSubmitted ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+				<div id="collapseTwo" class="<?php echo $isShowAccordition ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
 					<div class="accordion-body">
 						<?php Flash::show()?>
 						<?php echo $formAd->start()?>
@@ -185,44 +186,49 @@ $isSubmitted = isSubmitted();
 	<div class="card-body">
 	    <?php html_breadcrumbs_basic($validFilters ?? '', _route('ads_create')); ?>
 		<div class='d-flex justify-content-evenly flex-wrap'>
-			<?php foreach($adLists as $key => $row):?>
-				<?php
-				    $toggler = $row['status'];
-					$togglerClass = $row['status'] == 'on' ? 'btn-success' : 'btn-danger';
+			<?php if(empty($adLists)) :?>
+				<p>No ads found.</p>
+			<?php else :?>
+				<?php foreach($adLists as $key => $row):?>
+					<?php
+						$toggler = $row['status'];
+						$togglerClass = $row['status'] == 'on' ? 'btn-success' : 'btn-danger';
 
-					$images = $listingService->getImages($row['module_folder_name']);
-					$imageA = "public/uploads/images/{$row['module_folder_name']}/{$images[0]}";	
-				?>
-				<div class='card max300W'>
-					<div>
-					<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
-					<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
-						<div class='p-4' style='border:""'>
-							<?php html_ads_star_link($row['star_id'], $row['status'], '', seal($row['recno']));?>
-							<p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
-							<small class='text-truncate'><?php echo $row['listtypecode']?></small>
-						</p>
-						<div class='mt-0'>
-							<?php 
-								echo wLinkDefault(_route('ads_edit', [
-									'recno' => seal($row['recno'])
-								]), '', ['icon' => 'fa fa-edit', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
+						$images = $listingService->getImages($row['module_folder_name']);
+						$imageA = "public/uploads/images/{$row['module_folder_name']}/{$images[0]}";	
+					?>
+					<div class='card max300W'>
+						<div>
+						<img src='<?php echo $imageA?>' class='card-img-top rounded imgbox' alt='' style='filter:brightness(50%);'>
+						<div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
+							<div class='p-4'>
+								<?php html_ads_star_link($row['star_id'], $row['status'], '', seal($row['recno']));?>
+								<div><?php echo amountHTML($row['price'])?></div>
+								<div><?php echo crop_string($row['adsdesc'], 10)?></div>
+								<small class='text-truncate'><?php echo $row['listtypecode']?></small>
+							</p>
+							<div class='mt-0'>
+								<?php 
+									echo wLinkDefault(_route('ads_edit', [
+										'recno' => seal($row['recno'])
+									]), '', ['icon' => 'fa fa-edit', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
-								echo wLinkDefault(_route('prop_detail', [
-									'adId' => seal($row['recno'])
-								]), '', ['icon' => 'fa fa-eye', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
+									echo wLinkDefault(_route('prop_detail', [
+										'adId' => seal($row['recno'])
+									]), '', ['icon' => 'fa fa-eye', 'class' => 'btn btn-sm btn-outline-light rounded-circle']);
 
-								echo wLinkDefault(_route('ads_actions', [
-									'action' => 'toggle_ad',
-									'recno'  => seal($row['recno'])
-								]), '', ['icon' => 'fa fa-toggle-'.$toggler, 'class' => "btn btn-sm {$togglerClass} rounded-circle"]);
-							?>
+									echo wLinkDefault(_route('ads_actions', [
+										'action' => 'toggle_ad',
+										'recno'  => seal($row['recno'])
+									]), '', ['icon' => 'fa fa-toggle-'.$toggler, 'class' => "btn btn-sm {$togglerClass} rounded-circle"]);
+								?>
+							</div>
+							</div>
 						</div>
 						</div>
 					</div>
-					</div>
-				</div>
-			<?php endforeach?>
+				<?php endforeach?>
+			<?php endif?>
 		</div>
 	</div>
 </div>

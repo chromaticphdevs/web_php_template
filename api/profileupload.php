@@ -21,7 +21,7 @@
             
             $user = $accountService->single([
                 'where' => [
-                    'recno' => $userRecno
+                    'a_account.recno' => $userRecno
                 ]
             ]);
 

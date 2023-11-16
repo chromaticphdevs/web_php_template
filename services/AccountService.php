@@ -27,6 +27,8 @@
         const DEFAULT_MEMBER_TYPE = '1'; //blue 
         const DEFAULT_MEMBER_STATUS = 'Unverified';
         const MEMBER_STATUS_VERIFIED = 'Verified';
+        const MEMBER_TYPE_SILVER  = 2;
+        const MEMBER_TYPE_GOLD  = 3;
 
         const TYPE_BROKER = 'broker';
         const TYPE_AGENT = 'agent';
@@ -34,6 +36,37 @@
         const TYPE_REPRESENTATIVE = "representative";
 
         const ACTION_VERIFY_ACCOUNT_VIA_EMAIL = 'VERIFY_ACCOUNT_VIA_EMAIL';
+        const ACTION_SEND_VERIFY_ACCOUNT_VIA_EMAIL = 'SEND_VERIFY_ACCOUNT_VIA_EMAIL';
+
+
+        public function getAll($params =[]) {
+            $where = null;
+            $order = null;
+            $limit = null;
+
+            if(!empty($params['where'])) {
+                $where = " WHERE ".parent::conditionConvert($params['where']);
+            }
+
+            if(!empty($params['order'])) {
+                $order = " ORDER BY {$params['order']} ";
+            }
+
+            if(!empty($params['limit'])) {
+                $limit = " LIMIT BY {$params['limit']} ";
+            }
+
+            $this->databaseInstance->query(
+                "SELECT a_account.*, a_membertype.membertypecode,
+                    a_membertype.membertypedesc
+                    FROM {$this->_tableName} as a_account
+
+                    LEFT JOIN a_membertype
+                        ON a_account.membertype = a_membertype.recno
+                    {$where} {$order} {$limit}"
+            );
+            return $this->databaseInstance->resultSet();
+        }
 
         public static function memberTypeInfos() {
             return [
@@ -61,6 +94,14 @@
                     $this->addError("Incorrect password.");
                     return false;
                 } else {
+                    if(!isEqual($account['memberstatus'], 'Verified')) {
+                        $sendAccountVerificationLink = wLinkDefault(URL.DS._route('landing_actions',[
+                            'action' => AccountService::ACTION_SEND_VERIFY_ACCOUNT_VIA_EMAIL,
+                            'userRecno' => seal($account['recno'])
+                        ]), 'I did not recieve any email, please send confirmation again.');
+                        $this->addError("Check your email and verify your account.".$sendAccountVerificationLink);
+                        return false;
+                    }
                     $this->startAuth($account['recno']);
                     return true;
                 }
@@ -138,7 +179,7 @@
             //check user password
             $user = parent::single([
                 'where' => [
-                    'recno' => $userRecno
+                    'a_account.recno' => $userRecno
                 ]
             ]);
 
@@ -254,7 +295,7 @@
         public function startAuth($userRecno) {
             $user = parent::single([
                 'where' => [
-                    'recno' => $userRecno
+                    'a_account.recno' => $userRecno
                 ]
             ]);
 
@@ -267,6 +308,17 @@
         }
 
         public function requestChangeEmail($userId, $newEmail) {
+            $user = parent::single([
+                'where' => [
+                    'recno' => $userId
+                ]
+            ]);
+
+
+            if(isEqual($user['email'], $newEmail)) {
+                $this->addError("You are already using this email, change email request failed.");
+                return false;
+            }
             $validateEmail = $this->_validateEmail($newEmail, $userId);
 
             if(!$validateEmail) {

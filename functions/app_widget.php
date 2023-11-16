@@ -47,3 +47,42 @@
 			<a href="{$link}" {$attributes}>{$icon} {$text}</a>
 		EOF;
     }
+    //100 / 4 
+    function wPaginator($numberOfItems, $itemPerPage, $pageNo, $routeName, $queryParam, $attributes = []) {
+        // if($numberOfItems < $itemPerPage) {
+        //     //no pagination needed
+        //     return false;
+        // }
+        
+        $linkHTML = '';
+        $linkCount = ceil($numberOfItems / $itemPerPage);
+        for($i = 1; $i <= $linkCount; $i++) {
+            $queryParam['page'] = $i;
+            $href = _route($routeName, $queryParam);
+            $linkHTML .= "
+                <li class='page-item'>
+                    <a href='{$href}' class ='page-link'>{$i}</a>
+                </li>
+            ";
+        }
+
+        $lastRoute = $queryParam;
+        $lastRoute['page'] = $linkCount;
+        $lastRoute = _route($routeName, $lastRoute);
+
+        $firstRoute = $queryParam;
+        $firstRoute['page'] = 1;
+        $firstRoute = _route($routeName, $firstRoute);
+
+        return "
+            <ul class='pagination' style='margin:0px auto;'>
+                <li class='page-item'>
+                    <a href='{$firstRoute}' class ='page-link'>First</a>
+                </li>
+                {$linkHTML}
+                <li class='page-item'>
+                    <a href='{$lastRoute}' class ='page-link'>Last</a>
+                </li>
+            </ul>
+        ";
+    }

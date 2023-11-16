@@ -11,7 +11,7 @@
         $post = request()->posts();
         if(!empty($post['btn_login'])) {
             $user = $serviceAccount->authenticate($post['email'], $post['password']);
-
+            
             if(!$user) {
                 Flash::set(arr_to_str($serviceAccount->getErrors()),'danger');
             } else {

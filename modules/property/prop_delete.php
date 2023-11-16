@@ -49,7 +49,7 @@
             'recno' => $recno
         ]);
 
-        Flash::set("Property {$listing['listingcode']} has been removed");
+        Flash::set("Property {$listing['listingcode']} has been removed", 'PROP_DELETE_MESS');
         return redirect(_route('prop_create'));
     }
 

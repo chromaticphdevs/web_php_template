@@ -24,15 +24,20 @@
                 $this->_validateNumberOnly($toInsertData['securitydeposit'], 'Security Deposit');
             }
 
-            if(!empty($toInsertData['downpayment'])) {
-                $this->_validateNumberOnly($toInsertData['downpayment'], 'DownPayment');
-            }
+            // if(!empty($toInsertData['downpayment'])) {
+            //     $this->_validateNumberOnly($toInsertData['downpayment'], 'DownPayment');
+            // }
 
             if(!empty($toInsertData['price'])) {
                 $this->_validateNumberOnly($toInsertData['price'], 'Price');
             }
 
             if(!empty($this->getErrors())) {
+                return false;
+            }
+
+            if($toInsertData['price'] < 1) {
+                $this->addError("Invalid Price");
                 return false;
             }
             
@@ -98,8 +103,11 @@
             $this->databaseInstance->query(
                 "SELECT ads.*,listing_type.*, listing.recno as listing_recno,listing.*,
                     ads.recno as recno, ads.listingcode as listingcode,
-                    a_locationcity.loccitytag, a_propertyclass.propclasstag
+                    a_locationcity.loccitytag, a_propertyclass.propclasstag,
+                    a_membertype.membertypecode as memtype_code
+
                     FROM {$this->_tableName} as ads
+
                     LEFT JOIN b_listing as listing 
                         ON listing.listingkeys = ads.listingcode
                     LEFT JOIN a_listingtype as listing_type
@@ -111,9 +119,58 @@
                     LEFT JOIN a_propertyclass ON
                         a_propertyclass.propclasscode = listing.propclasscode
 
+                    LEFT JOIN a_accounts as a_account
+                        ON a_account.usercode = listing.usercode
+
+                    LEFT JOIN a_membertype as a_membertype
+                        ON a_membertype.recno = a_account.membertype
+                     
                     {$where} {$order} {$limit}"
             );
-
             return $this->databaseInstance->resultSet();
+        }
+
+        public function getAllCount($params = []) {
+            $where  = null;
+            $order = null;
+            $limit = null;
+
+            if(!empty($params['where'])) {
+                $where = " WHERE " .parent::conditionConvert($params['where']);
+            }
+
+            if(!empty($params['order'])) {
+                $order = " ORDER BY ".$params['order'];
+            }
+
+            if(!empty($params['limit'])) {
+                $limit = " LIMIT {$params['limit']}";
+            }
+
+            $this->databaseInstance->query(
+                "SELECT count(*) as total_result
+
+                    FROM {$this->_tableName} as ads
+
+                    LEFT JOIN b_listing as listing 
+                        ON listing.listingkeys = ads.listingcode
+                    LEFT JOIN a_listingtype as listing_type
+                        ON ads.listtypecode = listing_type.listtypecode
+
+                    LEFT JOIN a_locationcity on 
+                        a_locationcity.loccitycode = listing.loccitycode
+
+                    LEFT JOIN a_propertyclass ON
+                        a_propertyclass.propclasscode = listing.propclasscode
+
+                    LEFT JOIN a_accounts as a_account
+                        ON a_account.usercode = listing.usercode
+
+                    LEFT JOIN a_membertype as a_membertype
+                        ON a_membertype.recno = a_account.membertype
+                     
+                    {$where} {$order} {$limit}"
+            );
+            return $this->databaseInstance->single()['total_result'] ?? 0;
         }
     }

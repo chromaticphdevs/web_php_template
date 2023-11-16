@@ -8,7 +8,7 @@
 		'hostname' => 'localhost',
 		'db_user' => 'root',
 		'db_password' => '',
-		'db_name' => 'ciny_real_est'
+		'db_name' => 'cindy_real_est'
 	];
 
 	$database['uat'] = [

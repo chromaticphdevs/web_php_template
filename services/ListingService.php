@@ -58,7 +58,20 @@
             }
 
             $this->databaseInstance->query(
-                "SELECT * FROM {$this->_tableName} as listing
+                "SELECT listing.*, proptype.proptypedesc,
+                    proptype.proptypetag,
+                    propclass.propclassdesc,
+                    propclass.propclasstag,
+                    loccity.loccitydesc,
+                    loccity.loccitycode
+                    
+                    FROM {$this->_tableName} as listing
+                    LEFT JOIN a_propertyclass as propclass
+                        ON propclass.propclasscode = listing.propclasscode
+                    LEFT JOIN a_propertytype as proptype
+                        ON proptype.proptypecode = listing.proptypecode
+                    LEFT JOIN a_locationcity as loccity
+                        ON loccity.loccitycode = listing.loccitycode
                   {$where} {$order} {$limit}"
             );
             return $this->databaseInstance->resultSet();

@@ -80,7 +80,7 @@ use Core\Form;
                 'type' => 'text',
                 'class' => 'form-control',
                 'options' => [
-                    'label' => 'First Name'
+                    'label' => 'Last Name'
                 ],
                 'required' => true
             ]);

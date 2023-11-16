@@ -31,7 +31,7 @@
 
 	$starCount = $serviceAccount->single([
 		'where' => [
-			'recno' => whoIs('recno')
+			'a_account.recno' => whoIs('recno')
 		]
 	])->star_id ?? 0;
 
@@ -71,8 +71,8 @@
 							<div class="py-4">
 								<span class="text-truncate fs-3 p-0 m-0"><?php echo whoIs('memberfname');?></span><br>
 								<small class="text-truncate p-0 m-0"><?php echo whoIs('email');?></small><br>
-								<small class="text-truncate p-0 m-0">Phone: <?php whoIs('memberviber');?></small>
-								<small class="text-truncate p-0 m-0">Viber: <?php whoIs('memberviber');?></small>
+								<small class="text-truncate p-0 m-0">Phone: <?php echo whoIs('membercellno');?></small>
+								<small class="text-truncate p-0 m-0">Viber: <?php echo whoIs('memberviberno');?></small>
 							</div>
 							</div>
 						</div>

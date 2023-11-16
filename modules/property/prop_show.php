@@ -49,7 +49,9 @@
                 'class' => 'btn btn-primary btn-sm'
             ]);
 
-            echo wLinkDefault(_route('prop_create'), 'Create New Listing', [
+            echo wLinkDefault(_route('prop_create', [
+                'create_prop' => 1
+            ]), 'Create New Listing', [
                 'class' => 'btn btn-primary btn-sm'
             ]);
 
@@ -67,11 +69,11 @@
             <table class="table table-bordered">
                 <tr>
                     <td style="width: 30%;"><?php echo $listingForm->getLabel('proptypecode')?></td>
-                    <td><?php echo $listing['proptypecode']?></td>
+                    <td><?php echo $listing['proptypedesc']?></td>
                 </tr>
                 <tr>
                     <td style="width: 30%;"><?php echo $listingForm->getLabel('propclasscode')?></td>
-                    <td><?php echo $listing['propclasscode']?></td>
+                    <td><?php echo $listing['propclassdesc']?></td>
                 </tr>
                 <tr>
                     <td style="width: 30%;"><?php echo $listingForm->getLabel('listingcode')?></td>
@@ -83,11 +85,7 @@
                 </tr>
                 <tr>
                     <td style="width: 30%;"><?php echo $listingForm->getLabel('loccitycode')?></td>
-                    <td><?php echo $listing['loccitycode']?></td>
-                </tr>
-                <tr>
-                    <td style="width: 30%;"><?php echo $listingForm->getLabel('propaddress')?></td>
-                    <td><?php echo $listing['propaddress']?></td>
+                    <td><?php echo $listing['loccitydesc']?></td>
                 </tr>
                 <tr>
                     <td style="width: 30%;"><?php echo $listingForm->getLabel('propaddress')?></td>
@@ -103,15 +101,17 @@
         <section class="box mt-2">
             <h4>Images</h4>
             <div class="row">
-            <?php foreach($listingImages as $key => $row) :?>
-                <div class="col-md-4">
-                    <img src="<?php echo URL_PUBLIC.'/uploads/images/'.$imageFolder.'/'.$row?>" 
-                    alt="Property Image" style="width:100%">
-                    <div class="text-center"><?php echo wLinkDefault(_route('resource_delete', null, [
-                        'path' => seal("public/uploads/images/{$imageFolder}/{$row}")
-                    ]), 'Remove Image')?></div>
-                </div>
-            <?php endforeach?>
+                <?php foreach($listingImages as $key => $row) :?>
+                    <div class="col-md-4">
+                        <img src="<?php echo URL_PUBLIC.'/uploads/images/'.$imageFolder.'/'.$row?>" 
+                        alt="Property Image" style="width:300px; height:200px">
+                        <?php if(count($listingImages) > 1) :?>
+                            <div class="text-center"><?php echo wLinkDefault(_route('resource_delete', null, [
+                                'path' => seal("public/uploads/images/{$imageFolder}/{$row}")
+                            ]), 'Remove Image')?></div>
+                        <?php endif?>
+                    </div>
+                <?php endforeach?>
             </div>
         </section>
 
@@ -119,11 +119,13 @@
             <h4>Ads</h4>
             <?php if(empty($ads)) :?>
                 <p class="text-center">There are no ads for this listing. <?php echo wLinkDefault(_route('ads_create', [
-                    'listingcode' => $listing['listingkeys']
+                    'listingcode' => $listing['listingkeys'],
+                    'create_ad'   => '1'
                 ]), 'Create now')?></p>
             <?php else:?>
                 <p>There are (<?php echo count($ads)?>) total of ads for this listing : <?php echo wLinkDefault(_route('ads_create', [
-                    'listingcode' => $listing['listingkeys']
+                    'listingcode' => $listing['listingkeys'],
+                    'create_ad'   => '1'
                 ]), 'Add More Ads')?></p>
                 <div class="row">
                 <?php foreach($ads as $key => $row):?>
@@ -143,7 +145,8 @@
                         <div class='position-absolute bottom-0 start-50 translate-middle-x text-white text-center w-100'>
                             <div class='p-4' style='border:""'>
                                     <?php html_ads_star_link($row['star_id'], $row['status'], '', seal($row['recno']));?>
-                                    <p class='mb-2 text-truncate'><?php echo amountHTML($row['price'])?><br>
+                                    <div><?php echo amountHTML($row['price'])?></div>
+                                    <div><?php echo crop_string($row['adsdesc'], 10)?></div>
                                     <small class='text-truncate'><?php echo $row['listtypecode']?></small>
                                     </p>
                                     <div class='mt-0'>

@@ -77,17 +77,21 @@
 			]);
 		}
 
-		public function count($params = []) {
+		public function count($params = [], $alias = '') {
 			$where = null;
 			if(!empty($params['where'])){
 				$where = " WHERE ". $this->conditionConvert($params['where']);
 			}
+
+			if(!empty($alias)) {
+				$alias = ' as '.$alias;
+			}
 			$this->databaseInstance->query(
 				"SELECT count(*) as totalCount
-					FROM {$this->_tableName}
+					FROM {$this->_tableName} $alias
 					{$where}"
 			);
-
+			
 			return $this->databaseInstance->single()['totalCount'] ?? 0;
 		}
 

@@ -10,7 +10,7 @@
     $whoIs = whoIs();
     $user = $serviceAccount->single([
         'where' => [
-            'recno' => $whoIs['recno']
+            'a_account.recno' => $whoIs['recno']
         ]
     ]);
 
@@ -32,11 +32,11 @@
             $post['memberviberno'] = str_to_mobile_number($post['memberviberno']);
 
             $isOkay = $serviceAccount->updateAccountDetail($post, $post['recno']);
-
             if(!$isOkay) {
                 Flash::set(implode(',', $serviceAccount->getErrors()), 'danger', 'account_detail_message');
                 return request()->return();
             } else {
+                $serviceAccount->startAuth($post['recno']);
                 Flash::set("Account updated", 'success', 'account_detail_message');
                 return redirect(_route('user_profile'));
             }
@@ -185,7 +185,7 @@
                                 </div>
 
                                 <div class="form-floating mb-3">
-                                    <input type="password" name="confirm_password" value="" class="form-control" required="1">
+                                    <input type="password" id="confirm_password" name="confirm_password" value="" class="form-control" required="1">
                                     <label class=" col-form-label col-form-label " for="#">
                                         Confirm Password<span style="color:red;">*</span>
                                     </label>
@@ -308,8 +308,10 @@
             $("#C_showpass").on("click",function(){
                 let dis = $(this).is(":checked");
                 if(dis === true){
+                    $("#confirm_password").attr('type', 'text');
                     $("#password").attr("type","text");
                 }else{
+                    $("#confirm_password").attr('type', 'password');
                     $("#password").attr("type","password");
                 }
             });

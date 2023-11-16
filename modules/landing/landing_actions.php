@@ -34,6 +34,14 @@
                     }
                 }
             break;
+
+            case AccountService::ACTION_SEND_VERIFY_ACCOUNT_VIA_EMAIL:
+                $isOkay = $accountService->sendAccountVerificationViaEmail($userRecno);
+                if($isOkay) {
+                    Flash::set("Account Verification Email has been sent to your email");
+                    return redirect(_route('landing_login'));
+                }
+            break;
         }
     }
 ?>

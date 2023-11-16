@@ -77,18 +77,19 @@
 	$listingForm->setValue('module_folder_name', $imageFolder);
 
 	$isSubmitted = isSubmitted();
+	$isShowAccordition = !empty($_GET['create_prop']) || $isSubmitted;
 ?>
 <div class="card">
 	<div class="card-body">
 		<div class="accordion" id="accordionExample">
 			<div class="accordion-item">
 				<h2 class="accordion-header" id="headingTwo">
-					<button class="<?php echo $isSubmitted ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
-						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isSubmitted ? 'true' : 'false'?>" aria-controls="collapseTwo">
+					<button class="<?php echo $isShowAccordition ? 'accordion-button' : 'accordion-button collapsed'?>" type="button" 
+						data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<?php echo $isShowAccordition ? 'true' : 'false'?>" aria-controls="collapseTwo">
 						<i class="me-3 fa fa-clipboard-list"></i>Create New Listing
 					</button>
 				</h2>
-				<div id="collapseTwo" class="<?php echo $isSubmitted ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+				<div id="collapseTwo" class="<?php echo $isShowAccordition ? 'accordion-collapse collapse show' : 'accordion-collapse collapse'?>" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
 					<div class="accordion-body">
 						<?php Flash::show()?>
 						<?php echo $listingForm->start()?>
@@ -149,8 +150,8 @@
 			Form::open([
 				'method' => 'get'
 			]);
-
 			Form::hidden('filter', 'listing_filter');
+			Flash::show('PROP_DELETE_MESS');
 		?>
 		<div class="d-flex flex-lg-row flex-column justify-content-center">
 				<div class="">
@@ -198,6 +199,9 @@
 	<!-- Catalogue Result-->
 	<div id="load_here" class="card-body p-4">
 		<div class='d-flex justify-content-evenly flex-wrap'>
+			<?php if(empty($listings)) :?>
+				<p>No listing found.</p>
+			<?php else:?>
 			<?php foreach($listings as $key => $listing) :?>
 				<?php
 					if(!empty($listing['module_folder_name'])) {
@@ -238,6 +242,7 @@
 					</div>
 					</div>
 			<?php endforeach?>
+			<?php endif?>
 		</div>
 	</div>
 </div>

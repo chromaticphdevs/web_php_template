@@ -52,6 +52,9 @@
 			return $retVal;
 		}
 
+		public function getError() {
+			return $this->conn->error;
+		}
 		private function _cleanQuery() {
 			$this->result->free_result();
 			$this->conn->close();
