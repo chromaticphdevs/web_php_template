@@ -121,33 +121,36 @@ function sideadsindex_tag2($divid){
         LIMIT 1"
     );
     $row = $database->single();
-    $timeSince = time_since($row['dateinserted']);
-    $path = 'http://uptownritzcondo.com/items/0_side_ads/1637322152182.jpg';
-    $retVal .= <<<EOF
-        <a href= '{$row['ads_url']}' style='text-decoration:none;color:#000'>
-            <div class='card my-2'>
-                <div class='row g-0'>
-                    <div class='col-sm-4'>
-                        <img src='$path' class='img-fluid w-100' alt='card-horizontal-image' alt='Slide' style=''>
-                    </div>
-                    <div class='col-sm-8'>
-                    <div class='card-body'>
-                        <h5 class='card-title'>{$row['title']}</h5>
-                        <p class='card-text'>{$row['description']}</p>
-                        <p class='card-text'><small class='text-muted'>Last updated {$timeSince}</small></p>
-                    </div>
+
+    if($row) {
+        $timeSince = time_since($row['dateinserted']);
+        $path = 'http://uptownritzcondo.com/items/0_side_ads/1637322152182.jpg';
+        $retVal .= <<<EOF
+            <a href= '{$row['ads_url']}' style='text-decoration:none;color:#000'>
+                <div class='card my-2'>
+                    <div class='row g-0'>
+                        <div class='col-sm-4'>
+                            <img src='$path' class='img-fluid w-100' alt='card-horizontal-image' alt='Slide' style=''>
+                        </div>
+                        <div class='col-sm-8'>
+                        <div class='card-body'>
+                            <h5 class='card-title'>{$row['title']}</h5>
+                            <p class='card-text'>{$row['description']}</p>
+                            <p class='card-text'><small class='text-muted'>Last updated {$timeSince}</small></p>
+                        </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </a>
-      EOF;
-      
-      $out = <<< EOFILE
-            <div id="$divid" class="">
-                $retVal
-            </div>
-      EOFILE;
-      return $out;
+            </a>
+          EOF;
+          
+          $out = <<< EOFILE
+                <div id="$divid" class="">
+                    $retVal
+                </div>
+          EOFILE;
+          return $out;   
+    }
     }
     
 function sideadsfooter_tag(){

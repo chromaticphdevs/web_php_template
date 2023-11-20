@@ -12,7 +12,6 @@
         $post = request()->posts();
         if(!empty($post['btn_register'])) {
             $user = $serviceAccount->register($post);
-            
             if(!$user) {
                 Flash::set(arr_to_str($serviceAccount->getErrors()),'danger');
             } else {

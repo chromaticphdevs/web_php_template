@@ -58,7 +58,7 @@
             if($isOkay) {
                 session_destroy();
                 Flash::set(implode(',', $serviceAccount->getMessages()), 'success','account_email_message');
-                return redirect(_route('landing_auth'));
+                return redirect(_route('landing_login'));
             } else {
                 Flash::set(implode(',', $serviceAccount->getErrors()), 'danger','account_email_message');
             }

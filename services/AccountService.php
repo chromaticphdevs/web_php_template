@@ -247,14 +247,14 @@
             if(empty($userRecno)) {
                 $user = parent::single([
                     'where' => [
-                        'email' => $email
+                        'a_account.email' => $email
                     ]
                 ]);
             } else {
                 $user = parent::single([
                     'where' => [
                         'email' => $email,
-                        'recno' => [
+                        'a_account.recno' => [
                             'condition' => 'not equal',
                             'value' => $userRecno
                         ]
@@ -310,7 +310,7 @@
         public function requestChangeEmail($userId, $newEmail) {
             $user = parent::single([
                 'where' => [
-                    'recno' => $userId
+                    'a_account.recno' => $userId
                 ]
             ]);
 
@@ -328,7 +328,7 @@
 
             $user = parent::single([
                 'where' => [
-                    'recno' => $userId
+                    'a_account.recno' => $userId
                 ]
             ]);
 
@@ -418,10 +418,9 @@
         public function sendAccountVerificationViaEmail($userRecno) {
             $user = parent::single([
                 'where' => [
-                    'recno' => $userRecno
+                    'a_account.recno' => $userRecno
                 ]
             ]);
-
             if(!$user) {
                 $this->addError("No user found");
                 return false;
@@ -444,7 +443,7 @@
         public function resetPassword($email) {
             $user = parent::single([
                 'where' => [
-                    'email' => $email
+                    'a_account.email' => $email
                 ]
             ]);
 

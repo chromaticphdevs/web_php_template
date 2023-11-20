@@ -16,7 +16,7 @@
             case AccountService::ACTION_VERIFY_ACCOUNT_VIA_EMAIL:
                 $user = $accountService->single([
                     'where' => [
-                        'recno' => $userRecno
+                        'a_account.recno' => $userRecno
                     ]
                 ]);
 

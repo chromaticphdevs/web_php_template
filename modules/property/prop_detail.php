@@ -31,7 +31,7 @@
         ]
     ]);
 
-    $relatedAdsByListing = $adService->getAll([
+    $relatedAdsByLoc = $adService->getAll([
         'where' => [
             'ads.status' => 'on',
             'listing.loccitycode' => $adDetail['loccitycode'],
@@ -42,9 +42,10 @@
         ]
     ]);
 
-    $relatedAdsByLoc = $adService->getAll([
+    $relatedAdsByListing = $adService->getAll([
         'where' => [
             'ads.status' => 'on',
+            'listing.usercode' => $adDetail['usercode'],
             'ads.recno' => [
                 'condition' => 'not equal',
                 'value' => $adId
